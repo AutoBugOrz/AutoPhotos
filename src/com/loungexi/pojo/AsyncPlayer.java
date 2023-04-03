@@ -32,7 +32,6 @@ public class AsyncPlayer {
                     //keepGo()方法中调整isTerminate的值 若isAutoPlay的值改变则isTerminate的值改变
                     keepGo();
                 }
-
             });
             // flag自增使while条件判断不通过 实现play()方法和keepGo()方法停止互相调用来停止自动播放
             this.flag++;
