@@ -1,8 +1,10 @@
 package com.loungexi.ui;
 
 import com.loungexi.utils.HomePage;
+import com.loungexi.utils.MyBorderPane;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
@@ -13,7 +15,7 @@ import javafx.stage.Stage;
 public class BaseView {
 
     public BaseView(Stage stage) {
-        BorderPane borderPane = new BorderPane();
+        BorderPane borderPane = MyBorderPane.getBorderPane();
         // borderPane.setStyle("-fx-background-color: #00CED1");
 
         //设置程序宽高
@@ -23,7 +25,7 @@ public class BaseView {
         new TreeView(borderPane);
 
         //生成底部信息条
-        new BottomInfoBar(borderPane);
+        new BottomInfoBar();
 
         //生成所有图片的信息粗略展示栏
         new PictureDisplayBar(borderPane);
@@ -31,13 +33,10 @@ public class BaseView {
         //生成单击图片的信息详细展示栏
         new PictureDetailBar(borderPane);
 
-
         stage.getIcons().add(new Image("File:image/camera.png"));
         stage.setScene(scene);
         stage.setTitle("Photo Management Program");
         stage.show();
-
-
     }
 
 }

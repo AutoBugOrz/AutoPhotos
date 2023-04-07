@@ -1,9 +1,14 @@
 package com.loungexi.ui;
 
 import com.loungexi.utils.HomePage;
+import com.loungexi.utils.MyBorderPane;
+import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.io.File;
@@ -12,19 +17,31 @@ import java.io.File;
  * @author LoungeXi
  */
 public class BottomInfoBar {
-    private final VBox vBox = new VBox();
+    //    private final VBox vBox = new VBox();
+    private final HBox hBox;
     private final Label numberOfPictureLabel = new Label();
     private final Label sizeOfAllThePictureLabel = new Label();
+    private final Label selectedPictureLabel = new Label();
     private Long numberOfPicture;
     private Double sizeOfAllThePicture;
-    public static TreeItem<File> nowClickFile;
+    private static TreeItem<File> nowClickFile;
+    private int selectedPicture;
 
-    public BottomInfoBar(BorderPane borderPane) {
+    public BottomInfoBar() {
+        hBox = new HBox();
         setNumberOfPicture(0L);
         setSizeOfAllThePicture(0.000);
-        initSetInfoBar(borderPane);
+        setSelectedPicture(0);
+        initSetInfoBar(MyBorderPane.getBorderPane());
         setInformation();
         writeInformation();
+    }
+
+    public BottomInfoBar(int selected) {
+        hBox = (HBox) MyBorderPane.getBorderPane().getBottom();
+        ObservableList<Node> children = hBox.getChildren();
+        Label label = (Label) children.get(2);
+        label.setText("\t选中"+ selected + "张图片");
     }
 
     /**
@@ -33,15 +50,18 @@ public class BottomInfoBar {
      * @return: 初始化底部信息栏
      **/
     private void initSetInfoBar(BorderPane borderPane) {
-        vBox.setStyle("-fx-background-color: linear-gradient(to bottom,rgb(255, 255, 255),rgb(209, 209, 209))");
-        vBox.setPrefHeight(HomePage.HEIGHT * 0.07);
-        vBox.setPrefWidth(HomePage.WIDTH);
-        numberOfPictureLabel.setPrefWidth(HomePage.WIDTH);
-        sizeOfAllThePictureLabel.setPrefWidth(HomePage.WIDTH);
+        hBox.setStyle("-fx-background-color: linear-gradient(to bottom,rgb(255, 255, 255),rgb(209, 209, 209))");
+        hBox.setPrefHeight(HomePage.HEIGHT * 0.07);
+        hBox.setPrefWidth(HomePage.WIDTH);
+        numberOfPictureLabel.setPrefWidth(HomePage.WIDTH / 5);
+        sizeOfAllThePictureLabel.setPrefWidth(HomePage.WIDTH / 5);
+        selectedPictureLabel.setPrefWidth(HomePage.WIDTH / 5);
         numberOfPictureLabel.setPrefHeight(HomePage.HEIGHT * 0.0356);
         sizeOfAllThePictureLabel.setPrefHeight(HomePage.HEIGHT * 0.035);
-        vBox.getChildren().addAll(numberOfPictureLabel, sizeOfAllThePictureLabel);
-        borderPane.setBottom(vBox);
+        selectedPictureLabel.setPrefHeight(HomePage.HEIGHT * 0.035);
+        hBox.getChildren().addAll(numberOfPictureLabel, sizeOfAllThePictureLabel,selectedPictureLabel);
+        hBox.setAlignment(Pos.CENTER_LEFT);
+        borderPane.setBottom(hBox);
     }
 
     /**
@@ -58,7 +78,7 @@ public class BottomInfoBar {
         } else {
             sizeOfAllThePictureLabel.setText("\t图片大小:\t" + sizeOfAllThePicture.toString().split("\\.")[0] + "." + sizeOfAllThePicture.toString().split("\\.")[1].charAt(0) + "KB");
         }
-
+        selectedPictureLabel.setText("\t选中"+ getSelectedPicture() + "张图片");
     }
 
     /**
@@ -99,5 +119,17 @@ public class BottomInfoBar {
 
     private void setSizeOfAllThePicture(Double sizeOfAllThePicture) {
         this.sizeOfAllThePicture = sizeOfAllThePicture;
+    }
+
+    private int getSelectedPicture() {
+        return selectedPicture;
+    }
+
+    public void setSelectedPicture(int selectedPicture) {
+        this.selectedPicture = selectedPicture;
+    }
+
+    public static void setNowClickFile(TreeItem<File> clickFile) {
+        nowClickFile = clickFile;
     }
 }

@@ -28,8 +28,8 @@ public class TreeViewController {
             if (newValue != null) {
                 addItems(newValue, 0);
                 //在这里底部信息栏优化应该将静态面板在BaseView中new出来然后将数据分装成一个对象实时更新到静态面板上，这样的做法才是正确且快速的.
-                BottomInfoBar.nowClickFile = newValue;
-                new BottomInfoBar(borderPane);
+                BottomInfoBar.setNowClickFile(newValue);
+                new BottomInfoBar();
 
                 DisplayItemController.nowTreeItem = newValue;
                 PictureDisplayBar.DISPLAY_FLOW_PANE.getChildren().clear();
