@@ -21,7 +21,9 @@ import javafx.scene.shape.Rectangle;
  * @author LoungeXi
  */
 public class PictureDisplayBar {
+    // TODO 静态变量整体修改
     public static final FlowPane DISPLAY_FLOW_PANE = new FlowPane();
+
     public static BorderPane DISPLAY_BORDER;
     private final ScrollPane scrollPane = new ScrollPane();
     private Rectangle rectangle;

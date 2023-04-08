@@ -8,6 +8,7 @@ import javafx.scene.layout.FlowPane;
  * @author: LoungeXi
  **/
 public class PictureDetailBar {
+    // TODO 静态变量整体修改
     public final static FlowPane DETAIL_FLOW_PANE = new FlowPane();
 
     public PictureDetailBar(BorderPane borderPane) {

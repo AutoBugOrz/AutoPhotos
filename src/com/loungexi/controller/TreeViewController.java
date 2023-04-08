@@ -36,9 +36,6 @@ public class TreeViewController {
                 PictureDisplayBar.DISPLAY_FLOW_PANE.getChildren().clear();
                 PictureDisplayBar.getSelectedItem().clear();
                 new DisplayItemController();
-
-
-
                 //点击目录树的其他节点的时候将右边信息展示栏的节点清空
                 PictureDetailBar.DETAIL_FLOW_PANE.getChildren().clear();
             }
