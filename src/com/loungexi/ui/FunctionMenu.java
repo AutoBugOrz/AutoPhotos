@@ -1,6 +1,9 @@
 package com.loungexi.ui;
 
 import com.loungexi.controller.DisplayItemController;
+import com.loungexi.pojo.DisplayItem;
+import com.loungexi.pojo.Picture;
+import com.loungexi.pojo.SelectedItem;
 import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -8,6 +11,8 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FunctionMenu {
     private final ContextMenu contextMenu = new ContextMenu();
@@ -17,7 +22,7 @@ public class FunctionMenu {
         MenuItem copy =new MenuItem("复制");
         MenuItem rename =new MenuItem("重命名");
 
-        delete.setOnAction(actionEvent -> deleteImg(path));
+        delete.setOnAction(actionEvent -> deleteImg());
 
         copy.setOnAction(actionEvent -> copyImg(path));
 
@@ -54,12 +59,20 @@ public class FunctionMenu {
 
     }
 
-    private void deleteImg(String path) {
-        File file = new File(path);
+    private void deleteImg() {
+//        File file = new File(path);
+//
+//        if(file.delete()){
+//            refresh();
+//        }
 
-        if(file.delete()){
-            refresh();
+        SelectedItem selectedItem = PictureDisplayBar.getSelectedItem();
+        ArrayList<DisplayItem> items = selectedItem.getItems();
+        for (DisplayItem item : items) {
+
         }
+
+//        refresh();
     }
 
     private void refresh() {

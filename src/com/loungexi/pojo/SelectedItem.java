@@ -1,10 +1,9 @@
 package com.loungexi.pojo;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class SelectedItem {
-    private List<DisplayItem> items;
+    private ArrayList<DisplayItem> items;
 
     public SelectedItem() {
         items = new ArrayList<>();
@@ -19,9 +18,23 @@ public class SelectedItem {
     public void select(DisplayItem item){
         item.setStyle("-fx-background-color: rgb(202, 202, 202);" + "-fx-border-insets: 1;" + "-fx-border-color: rgb(163, 163, 163)");
         item.setSelected(true);
-        items.add(item);
+        if(!items.contains(item)){
+            items.add(item);
+        }
     }
 
+    public void clear(){
+        items.clear();
+    }
 
+    public void delete(){
+        for (DisplayItem item : items) {
+
+        }
+    }
+
+    public ArrayList<DisplayItem> getItems() {
+        return items;
+    }
 
 }

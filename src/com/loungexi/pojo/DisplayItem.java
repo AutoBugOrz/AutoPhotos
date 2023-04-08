@@ -1,9 +1,6 @@
 package com.loungexi.pojo;
 
-import com.loungexi.ui.FunctionMenu;
-import com.loungexi.ui.ImageShowFrame;
-import com.loungexi.ui.PictureDetailBar;
-import com.loungexi.ui.PictureDisplayBar;
+import com.loungexi.ui.*;
 import com.loungexi.utils.HomePage;
 import com.loungexi.utils.ItemChanger;
 import com.loungexi.utils.VBoxData;
@@ -82,8 +79,6 @@ public class DisplayItem extends VBox{
                 ItemChanger.vBoxChanger = this;
                 //单击后先清除原先展示栏目上的展示信息 再放上新的展示信息
                 PictureDetailBar.DETAIL_FLOW_PANE.getChildren().clear();
-                //TODO:
-                System.out.println("1");
             } else {
                 ItemChanger.vBoxChanger = this;
             }
@@ -92,6 +87,7 @@ public class DisplayItem extends VBox{
                 //设置单击项目的CSS
                 this.setStyle("-fx-background-color: rgb(202, 202, 202);" + "-fx-border-insets: 1;" + "-fx-border-color: rgb(163, 163, 163)");
                 new DetailItem(picture);
+                new BottomInfoBar(1);
             }
 
             // 鼠标左键 双击事件 创建一个舞台展示图片的详细信息
@@ -115,5 +111,9 @@ public class DisplayItem extends VBox{
 
     public void setSelected(boolean selected) {
         isSelected = selected;
+    }
+
+    public Picture getPicture() {
+        return picture;
     }
 }

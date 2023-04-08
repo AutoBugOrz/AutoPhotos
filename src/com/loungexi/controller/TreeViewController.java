@@ -1,5 +1,6 @@
 package com.loungexi.controller;
 
+import com.loungexi.pojo.SelectedItem;
 import com.loungexi.ui.BottomInfoBar;
 import com.loungexi.ui.PictureDetailBar;
 import com.loungexi.ui.PictureDisplayBar;
@@ -33,7 +34,10 @@ public class TreeViewController {
 
                 DisplayItemController.nowTreeItem = newValue;
                 PictureDisplayBar.DISPLAY_FLOW_PANE.getChildren().clear();
+                PictureDisplayBar.getSelectedItem().clear();
                 new DisplayItemController();
+
+
 
                 //点击目录树的其他节点的时候将右边信息展示栏的节点清空
                 PictureDetailBar.DETAIL_FLOW_PANE.getChildren().clear();
