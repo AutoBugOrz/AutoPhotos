@@ -9,7 +9,9 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 
 public class ImageShowBar {
+    // TODO 静态变量整体修改
     public final static AnchorPane ANCHOR_PANE = new AnchorPane();
+    // TODO 静态变量整体修改
     public final static Label Image_LABEL = new Label();
     private final DragScrollPane scrollPane = new DragScrollPane();
 

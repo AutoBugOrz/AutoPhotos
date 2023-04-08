@@ -17,6 +17,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 public class LargeImageShowItem {
+    // TODO 静态变量整体修改
     public static final ImageView IMAGE_VIEW = new ImageView();
     // public Integer imageHeight;
     // public Integer imageWidth;
