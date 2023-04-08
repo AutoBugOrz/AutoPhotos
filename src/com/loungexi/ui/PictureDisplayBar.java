@@ -167,7 +167,7 @@ public class PictureDisplayBar {
         return true;
     }
 
-    private void refreshBIBar() {
+    public static void refreshBIBar() {
         ObservableList<Node> children = DISPLAY_FLOW_PANE.getChildren();
         int selected = 0;
         for (int i = 0; i < children.size(); i++) {

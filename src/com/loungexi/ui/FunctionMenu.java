@@ -12,7 +12,6 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 public class FunctionMenu {
     private final ContextMenu contextMenu = new ContextMenu();
@@ -60,16 +59,16 @@ public class FunctionMenu {
     }
 
     private void deleteImg() {
-//        File file = new File(path);
-//
-//        if(file.delete()){
-//            refresh();
-//        }
-
         SelectedItem selectedItem = PictureDisplayBar.getSelectedItem();
         ArrayList<DisplayItem> items = selectedItem.getItems();
         for (DisplayItem item : items) {
-
+            if(item.isSelected()){
+                String path = item.getPicture().getImage().getUrl().substring(5);
+                File file = new File(path);
+                if(file.delete()){
+                    refresh();
+                }
+            }
         }
 
 //        refresh();
@@ -78,8 +77,7 @@ public class FunctionMenu {
     private void refresh() {
         PictureDisplayBar.DISPLAY_FLOW_PANE.getChildren().clear();
         PictureDetailBar.DETAIL_FLOW_PANE.getChildren().clear();
-        PictureDisplayBar pictureDisplayBar = new PictureDisplayBar(PictureDisplayBar.DISPLAY_BORDER);
-        pictureDisplayBar.initBackground();
+        new PictureDisplayBar(PictureDisplayBar.DISPLAY_BORDER);
         new DisplayItemController();
         new BottomInfoBar();
     }
