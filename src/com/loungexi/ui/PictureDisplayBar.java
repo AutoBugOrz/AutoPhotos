@@ -56,6 +56,17 @@ public class PictureDisplayBar {
         scrollPane.setContent(pane);
         scrollPane.setFitToHeight(true);
         scrollPane.setFitToWidth(true);
+        new FunctionMenu();
+
+        scrollPane.setOnMouseClicked(mouseEvent -> {
+            if(mouseEvent.getButton() == MouseButton.SECONDARY && mouseEvent.getClickCount() == 1) {
+                if(FunctionMenu.getContextMenu().isShowing()){
+                    FunctionMenu.getContextMenu().hide();
+                }else{
+                    FunctionMenu.getContextMenu().show(scrollPane, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+                }
+            }
+        });
     }
 
     /**

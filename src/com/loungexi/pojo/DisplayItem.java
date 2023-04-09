@@ -113,10 +113,6 @@ public class DisplayItem extends VBox{
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
                 PictureDisplayBar.getSelectedItem().select(this);
                 PictureDisplayBar.refreshBIBar();
-                String url = picture.getImage().getUrl();
-                String path = url.substring(5);
-                FunctionMenu functionMenu = new FunctionMenu(path);
-                imageLabel.setContextMenu(functionMenu.getContextMenu());
             }
         });
     }

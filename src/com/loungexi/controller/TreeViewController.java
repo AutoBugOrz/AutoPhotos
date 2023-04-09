@@ -32,11 +32,10 @@ public class TreeViewController {
                 BottomInfoBar.setNowClickFile(newValue);
                 new BottomInfoBar();
 
-//                System.out.println(newValue.getValue().getPath());
-
                 DisplayItemController.setNowTreeItem(newValue);
-                PictureDisplayBar.DISPLAY_FLOW_PANE.getChildren().clear();
                 PictureDisplayBar.getSelectedItem().clear();
+                PictureDisplayBar.DISPLAY_FLOW_PANE.getChildren().clear();
+
                 new DisplayItemController();
                 //点击目录树的其他节点的时候将右边信息展示栏的节点清空
                 PictureDetailBar.DETAIL_FLOW_PANE.getChildren().clear();

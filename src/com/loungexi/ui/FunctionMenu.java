@@ -11,6 +11,9 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,13 +22,13 @@ import java.util.List;
  * @author Paul
  */
 public class FunctionMenu {
-    private final ContextMenu contextMenu = new ContextMenu();
+    private static ContextMenu contextMenu = new ContextMenu();
     private Stage stage;
     private String name;
     private String startId;
     private String digit;
 
-    public FunctionMenu(String path) {
+    public FunctionMenu() {
         MenuItem delete = new MenuItem("删除");
         MenuItem copy = new MenuItem("复制");
         MenuItem rename = new MenuItem("重命名");
@@ -50,9 +53,20 @@ public class FunctionMenu {
         Clipboard clipboard = Clipboard.getSystemClipboard();
         List<File> files = clipboard.getFiles();
         for (File file : files) {
-//            File newFile = new File(newDirPath + file.getName());
-            System.out.println(file.getName());
+            File newFile = new File(newDirPath + file.getName());
+            try (FileInputStream is = new FileInputStream(file);
+                 FileOutputStream os = new FileOutputStream(newFile)){
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = is.read(buffer)) != -1) {
+                    os.write(buffer, 0, length);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+        new DisplayItemController();
+        new BottomInfoBar();
     }
 
     private void renameImg(SelectedItem selectedItem) {
@@ -60,7 +74,7 @@ public class FunctionMenu {
 
         if (items.size() == 1) {
             String path = items.get(0).getPicture().getImage().getUrl().substring(5);
-            resetItemStatus(items.get(0));
+            items.get(0).setSelected(false);
             File file = new File(path);
             TextField textField = new TextField();
             stage = new Stage();
@@ -226,10 +240,6 @@ public class FunctionMenu {
         return exists;
     }
 
-    private void resetItemStatus(DisplayItem displayItem) {
-        displayItem.setSelected(false);
-    }
-
     private void copyImg(SelectedItem selectedItem) {
         Clipboard clipboard = Clipboard.getSystemClipboard();
         List<File> files = selectedItem.copy();
@@ -251,14 +261,16 @@ public class FunctionMenu {
     }
 
     private void refresh() {
+        PictureDisplayBar.getSelectedItem().clear();
         PictureDisplayBar.DISPLAY_FLOW_PANE.getChildren().clear();
         PictureDetailBar.DETAIL_FLOW_PANE.getChildren().clear();
-        PictureDisplayBar.getSelectedItem().clear();
         new DisplayItemController();
         new BottomInfoBar();
     }
 
-    public ContextMenu getContextMenu() {
+
+
+    public static ContextMenu getContextMenu() {
         return contextMenu;
     }
 }

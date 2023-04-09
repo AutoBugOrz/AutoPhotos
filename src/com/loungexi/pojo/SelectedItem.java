@@ -31,6 +31,11 @@ public class SelectedItem {
     }
 
     public void clear() {
+        for (int i = 0; i < items.size(); i++) {
+            if(items.get(i).isSelected()){
+                items.get(i).setSelected(false);
+            }
+        }
         items.clear();
     }
 
@@ -52,6 +57,7 @@ public class SelectedItem {
         List<File> files = new ArrayList<>();
         for (int i = 0; i < items.size(); i++) {
             File file = new File(items.get(i).getPicture().getImage().getUrl().substring(5));
+            items.get(i).setSelected(false);
             files.add(file);
         }
         return files;
