@@ -16,6 +16,9 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 
+import java.io.File;
+import java.util.ArrayList;
+
 
 /**
  * @author LoungeXi
@@ -45,6 +48,7 @@ public class PictureDisplayBar {
 
     public void initBackground() {
         initRectangle();
+        selectedItem.clear();
         setFlowPane();
         setScrollPane();
         DISPLAY_BORDER.setCenter(scrollPane);
@@ -70,9 +74,6 @@ public class PictureDisplayBar {
         AnchorPane.setBottomAnchor(DISPLAY_FLOW_PANE, 0.0);
         AnchorPane.setRightAnchor(DISPLAY_FLOW_PANE, 0.0);
 
-        System.out.println(scrollPane.getMinViewportWidth());
-
-
         DISPLAY_FLOW_PANE.setOnMousePressed(mouseEvent -> {
             if (mouseEvent.isPrimaryButtonDown()) {
                 mouseStart = new Point(mouseEvent.getX(), mouseEvent.getY());
@@ -80,16 +81,20 @@ public class PictureDisplayBar {
         });
 
         DISPLAY_FLOW_PANE.setOnMouseClicked(mouseEvent -> {
+            double x = mouseEvent.getX();
+            double y = mouseEvent.getY();
             if (mouseEvent.getButton() == MouseButton.PRIMARY && !releaseDrag) {
-                double x = mouseEvent.getX();
-                double y = mouseEvent.getY();
-                if (!isInner(x, y) && clickBlank) {
-                    for (int i = 0; i < DISPLAY_FLOW_PANE.getChildren().size(); i++) {
-                        DisplayItem item = (DisplayItem) DISPLAY_FLOW_PANE.getChildren().get(i);
-                        if (item.isSelected()) {
-                            selectedItem.unselected(item);
-                        }
+                if(!isInner(x, y) && selectedItem.getItems().size() == 1){
+                    selectedItem.getItems().get(0).setSelected(false);
+                    selectedItem.removeUnselected();
+                    refreshBIBar();
+                }
+                if (!isInner(x, y) && clickBlank && selectedItem.getItems().size() != 0) {
+                    ArrayList<DisplayItem> items = selectedItem.getItems();
+                    for (int i = 0; i < items.size(); i++) {
+                        items.get(i).setSelected(false);
                     }
+                    selectedItem.removeUnselected();
                     refreshBIBar();
                 }
             }
@@ -99,9 +104,6 @@ public class PictureDisplayBar {
         DISPLAY_FLOW_PANE.setOnMouseDragged(mouseEvent -> {
             if (mouseEvent.isPrimaryButtonDown()) {
                 mouseDragged = new Point(mouseEvent.getX(), mouseEvent.getY());
-                if (mouseDragged.getX() == mouseStart.getX() && mouseDragged.getY() == mouseStart.getY()) {
-                    return;
-                }
 
                 Point t = new Point(Math.max(mouseDragged.getX(), mouseStart.getX()), Math.max(mouseDragged.getY(), mouseStart.getY()));
                 Point mouseStart_t = new Point(Math.min(mouseDragged.getX(), mouseStart.getX()), Math.min(mouseDragged.getY(), mouseStart.getY()));

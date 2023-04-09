@@ -84,8 +84,6 @@ public class DetailItem {
     private void setBox() {
         vBox.setPrefHeight(HomePage.HEIGHT * 0.7);
         vBox.setPrefWidth(HomePage.WIDTH*0.2541);
-        System.out.println(HomePage.HEIGHT);
-        System.out.println(HomePage.WIDTH);
         vBox.setPadding(new Insets(20));
         //下面两个Label标签是为了美化界面 使用了一个取巧的办法
         Label whiteLabel = new Label();

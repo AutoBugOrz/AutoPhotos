@@ -3,6 +3,7 @@ package com.loungexi.pojo;
 import com.loungexi.ui.*;
 import com.loungexi.utils.HomePage;
 import com.loungexi.utils.ItemChanger;
+import com.loungexi.utils.MyBorderPane;
 import com.loungexi.utils.VBoxData;
 import javafx.event.EventType;
 import javafx.geometry.Pos;
@@ -14,11 +15,13 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
+import java.util.ArrayList;
+import java.util.Objects;
+
 /**
  * @author LoungeXi
  */
 public class DisplayItem extends VBox{
-//    private final VBox vBox = new VBox();
     private final Label imageLabel = new Label();
     private final Label imageNameLabel = new Label();
     private final Picture picture;
@@ -88,6 +91,17 @@ public class DisplayItem extends VBox{
                 this.setStyle("-fx-background-color: rgb(202, 202, 202);" + "-fx-border-insets: 1;" + "-fx-border-color: rgb(163, 163, 163)");
                 new DetailItem(picture);
                 new BottomInfoBar(1);
+                SelectedItem selectedItem = PictureDisplayBar.getSelectedItem();
+                selectedItem.select(this);
+                ArrayList<DisplayItem> items = selectedItem.getItems();
+                if(items.size() > 1){
+                    for (DisplayItem item : items) {
+                        if(!this.equals(item)){
+                            item.setSelected(false);
+                        }
+                    }
+                    selectedItem.removeUnselected();
+                }
             }
 
             // 鼠标左键 双击事件 创建一个舞台展示图片的详细信息
@@ -117,5 +131,18 @@ public class DisplayItem extends VBox{
 
     public Picture getPicture() {
         return picture;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DisplayItem item = (DisplayItem) o;
+        return isSelected == item.isSelected && Objects.equals(imageLabel, item.imageLabel) && Objects.equals(imageNameLabel, item.imageNameLabel) && Objects.equals(picture, item.picture);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(imageLabel, imageNameLabel, picture, isSelected);
     }
 }
