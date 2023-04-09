@@ -14,12 +14,19 @@ import java.io.File;
  * @author LoungeXi
  */
 public class DisplayItemController {
-    public static TreeItem<File> nowTreeItem = new TreeItem<>();
+    private static TreeItem<File> nowTreeItem;
 
     public DisplayItemController() {
         initDisplayBar();
     }
 
+    public static void setNowTreeItem(TreeItem<File> now) {
+        nowTreeItem = now;
+    }
+
+    public static TreeItem<File> getNowTreeItem() {
+        return nowTreeItem;
+    }
 /**
  * @author: LoungeXi
  * @return: 初始化展示面板，读取目录中的符合条件的图片展示在面板中

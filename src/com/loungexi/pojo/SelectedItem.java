@@ -2,7 +2,9 @@ package com.loungexi.pojo;
 
 import com.loungexi.utils.ItemChanger;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Paul
@@ -46,4 +48,12 @@ public class SelectedItem {
         return items;
     }
 
+    public List<File> copy(){
+        List<File> files = new ArrayList<>();
+        for (int i = 0; i < items.size(); i++) {
+            File file = new File(items.get(i).getPicture().getImage().getUrl().substring(5));
+            files.add(file);
+        }
+        return files;
+    }
 }

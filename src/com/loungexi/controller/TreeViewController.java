@@ -32,7 +32,9 @@ public class TreeViewController {
                 BottomInfoBar.setNowClickFile(newValue);
                 new BottomInfoBar();
 
-                DisplayItemController.nowTreeItem = newValue;
+//                System.out.println(newValue.getValue().getPath());
+
+                DisplayItemController.setNowTreeItem(newValue);
                 PictureDisplayBar.DISPLAY_FLOW_PANE.getChildren().clear();
                 PictureDisplayBar.getSelectedItem().clear();
                 new DisplayItemController();

@@ -16,7 +16,6 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 
-import java.io.File;
 import java.util.ArrayList;
 
 
@@ -28,15 +27,14 @@ public class PictureDisplayBar {
     public static final FlowPane DISPLAY_FLOW_PANE = new FlowPane();
 
     public static BorderPane DISPLAY_BORDER;
-    private final ScrollPane scrollPane = new ScrollPane();
-    private Rectangle rectangle;
-    private Point mouseStart;
-    private Point mouseDragged;
-    private static SelectedItem selectedItem = new SelectedItem();
-    private AnchorPane pane = new AnchorPane();
-    // if first time click on the blank
-    private boolean clickBlank = false;
-    private boolean releaseDrag = false;
+    private static final ScrollPane scrollPane = new ScrollPane();
+    private static final Rectangle rectangle = new Rectangle();
+    private static Point mouseStart;
+    private static Point mouseDragged;
+    private static final SelectedItem selectedItem = new SelectedItem();
+    private static final AnchorPane pane = new AnchorPane();
+    private static boolean clickBlank = false;
+    private static boolean releaseDrag = false;
 
 
     public PictureDisplayBar(BorderPane borderPane) {
@@ -184,7 +182,6 @@ public class PictureDisplayBar {
     }
 
     private void initRectangle() {
-        rectangle = new Rectangle();
         rectangle.setVisible(false);
         pane.getChildren().addAll(DISPLAY_FLOW_PANE, rectangle);
     }

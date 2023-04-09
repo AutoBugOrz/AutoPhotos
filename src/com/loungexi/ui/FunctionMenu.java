@@ -5,11 +5,14 @@ import com.loungexi.pojo.DisplayItem;
 import com.loungexi.pojo.SelectedItem;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -26,17 +29,30 @@ public class FunctionMenu {
         MenuItem delete = new MenuItem("删除");
         MenuItem copy = new MenuItem("复制");
         MenuItem rename = new MenuItem("重命名");
+        MenuItem paste = new MenuItem("粘贴");
 
         SelectedItem selectedItem = PictureDisplayBar.getSelectedItem();
 
         delete.setOnAction(actionEvent -> deleteImg());
 
-        copy.setOnAction(actionEvent -> copyImg());
+        copy.setOnAction(actionEvent -> copyImg(selectedItem));
 
         rename.setOnAction(actionEvent -> renameImg(selectedItem));
 
-        contextMenu.getItems().addAll(copy, rename, delete);
+        paste.setOnAction(actionEvent -> pasteImg());
+
+        contextMenu.getItems().addAll(copy, paste, rename, delete);
         contextMenu.setStyle("-fx-background-color:rgb(255, 255, 255, .85)");
+    }
+
+    private void pasteImg() {
+        String newDirPath = DisplayItemController.getNowTreeItem().getValue().getPath() + File.separator;
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        List<File> files = clipboard.getFiles();
+        for (File file : files) {
+//            File newFile = new File(newDirPath + file.getName());
+            System.out.println(file.getName());
+        }
     }
 
     private void renameImg(SelectedItem selectedItem) {
@@ -214,26 +230,30 @@ public class FunctionMenu {
         displayItem.setSelected(false);
     }
 
-    private void copyImg() {
-
+    private void copyImg(SelectedItem selectedItem) {
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        List<File> files = selectedItem.copy();
+        ClipboardContent content = new ClipboardContent();
+        content.putFiles(files);
+        clipboard.setContent(content);
     }
 
     private void deleteImg() {
         SelectedItem selectedItem = PictureDisplayBar.getSelectedItem();
         ArrayList<DisplayItem> items = selectedItem.getItems();
-        for (DisplayItem item : items) {
-            String path = item.getPicture().getImage().getUrl().substring(5);
+        for (int i = 0; i < items.size(); i++) {
+            String path = items.get(i).getPicture().getImage().getUrl().substring(5);
             File file = new File(path);
-            if (file.delete()) {
-                refresh();
-            }
+            file.delete();
+            items.get(i).setSelected(false);
         }
+        refresh();
     }
 
     private void refresh() {
         PictureDisplayBar.DISPLAY_FLOW_PANE.getChildren().clear();
         PictureDetailBar.DETAIL_FLOW_PANE.getChildren().clear();
-        new PictureDisplayBar(PictureDisplayBar.DISPLAY_BORDER);
+        PictureDisplayBar.getSelectedItem().clear();
         new DisplayItemController();
         new BottomInfoBar();
     }
