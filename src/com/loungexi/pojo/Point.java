@@ -1,5 +1,9 @@
 package com.loungexi.pojo;
 
+/**
+ * 坐标点类
+ * @author Paul
+ */
 public class Point {
     private double x;
     private double y;

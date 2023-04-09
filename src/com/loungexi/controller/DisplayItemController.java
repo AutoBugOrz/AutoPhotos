@@ -3,9 +3,13 @@ package com.loungexi.controller;
 
 import com.loungexi.pojo.DisplayItem;
 import com.loungexi.pojo.Picture;
+import com.loungexi.ui.PictureDisplayBar;
+import com.loungexi.utils.MyBorderPane;
+import com.loungexi.utils.VBoxData;
 import javafx.scene.control.TreeItem;
 
 import javafx.scene.image.Image;
+import javafx.scene.layout.AnchorPane;
 
 
 import java.io.File;
@@ -14,6 +18,7 @@ import java.io.File;
  * @author LoungeXi
  */
 public class DisplayItemController {
+    //当前目录节点
     private static TreeItem<File> nowTreeItem;
 
     public DisplayItemController() {

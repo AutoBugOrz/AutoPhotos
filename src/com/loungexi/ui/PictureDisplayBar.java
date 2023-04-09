@@ -10,9 +10,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 
@@ -25,16 +23,20 @@ import java.util.ArrayList;
 public class PictureDisplayBar {
     // TODO 静态变量整体修改
     public static final FlowPane DISPLAY_FLOW_PANE = new FlowPane();
-
     public static BorderPane DISPLAY_BORDER;
-    private static final ScrollPane scrollPane = new ScrollPane();
+    public static final ScrollPane scrollPane = new ScrollPane();
     private static final Rectangle rectangle = new Rectangle();
     private static Point mouseStart;
     private static Point mouseDragged;
+    //当前目录下的被选中图片Item
     private static final SelectedItem selectedItem = new SelectedItem();
-    private static final AnchorPane pane = new AnchorPane();
+    public static AnchorPane pane = new AnchorPane();
+    //判断点击事件是否发生在图片区域
     private static boolean clickBlank = false;
+    //判断是否为框选完成后的第一次释放点击
     private static boolean releaseDrag = false;
+    //框选前，滚动条的初始位置
+    private static double startVvalue;
 
 
     public PictureDisplayBar(BorderPane borderPane) {
@@ -53,17 +55,23 @@ public class PictureDisplayBar {
     }
 
     private void setScrollPane() {
-        scrollPane.setContent(pane);
-        scrollPane.setFitToHeight(true);
         scrollPane.setFitToWidth(true);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setContent(pane);
         new FunctionMenu();
 
+
         scrollPane.setOnMouseClicked(mouseEvent -> {
-            if(mouseEvent.getButton() == MouseButton.SECONDARY && mouseEvent.getClickCount() == 1) {
-                if(FunctionMenu.getContextMenu().isShowing()){
+            if (mouseEvent.getButton() == MouseButton.SECONDARY && mouseEvent.getClickCount() == 1) {
+                if (FunctionMenu.getContextMenu().isShowing()) {
                     FunctionMenu.getContextMenu().hide();
-                }else{
+                } else {
                     FunctionMenu.getContextMenu().show(scrollPane, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+                }
+            }
+            if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 1) {
+                if (FunctionMenu.getContextMenu().isShowing()) {
+                    FunctionMenu.getContextMenu().hide();
                 }
             }
         });
@@ -86,19 +94,25 @@ public class PictureDisplayBar {
         DISPLAY_FLOW_PANE.setOnMousePressed(mouseEvent -> {
             if (mouseEvent.isPrimaryButtonDown()) {
                 mouseStart = new Point(mouseEvent.getX(), mouseEvent.getY());
+                startVvalue = scrollPane.getVvalue();
             }
         });
 
         DISPLAY_FLOW_PANE.setOnMouseClicked(mouseEvent -> {
             double x = mouseEvent.getX();
             double y = mouseEvent.getY();
+
+            /**
+             * 若左键单击事件发生在非图片区域上，则取消选中FlowPane上的所有被选中图片
+             * releaseDrag判断是否为普通单击事件，还是框选操作后释放触发的单击事件
+             */
             if (mouseEvent.getButton() == MouseButton.PRIMARY && !releaseDrag) {
-                if(!isInner(x, y) && selectedItem.getItems().size() == 1){
+                if (!isInner(x, y) && selectedItem.getItems().size() == 1) {
                     selectedItem.getItems().get(0).setSelected(false);
                     selectedItem.removeUnselected();
                     refreshBIBar();
                 }
-                if (!isInner(x, y) && clickBlank && selectedItem.getItems().size() != 0) {
+                if (!isInner(x, y) && clickBlank && selectedItem.getItems().size() > 1) {
                     ArrayList<DisplayItem> items = selectedItem.getItems();
                     for (int i = 0; i < items.size(); i++) {
                         items.get(i).setSelected(false);
@@ -107,6 +121,7 @@ public class PictureDisplayBar {
                     refreshBIBar();
                 }
             }
+            //普通单击事件发生，releaseDrag置为false
             releaseDrag = false;
         });
 
@@ -118,6 +133,17 @@ public class PictureDisplayBar {
                 Point mouseStart_t = new Point(Math.min(mouseDragged.getX(), mouseStart.getX()), Math.min(mouseDragged.getY(), mouseStart.getY()));
                 mouseDragged = t;
 
+               if(mouseEvent.getX() > scrollPane.getWidth()){
+                   double x = scrollPane.getWidth();
+                   double y = mouseDragged.getY();
+                   mouseDragged = new Point(x, y);
+               }
+
+               //滚动条位置跟随
+                double moveY = mouseStart.getY() - mouseEvent.getY();
+                scrollPane.setVvalue(startVvalue - (moveY / (DISPLAY_FLOW_PANE.getHeight() - scrollPane.getHeight())) / 3);
+
+                //判断矩形是否框选中图片
                 for (int i = 0; i < DISPLAY_FLOW_PANE.getChildren().size(); i++) {
                     double left = DISPLAY_FLOW_PANE.getChildren().get(i).getLayoutX();
                     double top = DISPLAY_FLOW_PANE.getChildren().get(i).getLayoutY();
@@ -141,7 +167,8 @@ public class PictureDisplayBar {
 
         DISPLAY_FLOW_PANE.setOnMouseReleased(mouseEvent ->
         {
-            if(!releaseDrag && rectangle.isVisible()){
+            //如果rectangle可见，说明此次释放事件的发生在多选操作完成的时候，将releaseDrag置为true
+            if (!releaseDrag && rectangle.isVisible()) {
                 releaseDrag = true;
             }
             rectangle.setVisible(false);
@@ -149,8 +176,10 @@ public class PictureDisplayBar {
     }
 
     /**
+     * 判断点击是否发生在图片所在区域
+     *
      * @author: Paul
-     * @return: if click point in picture field return true, else return false
+     * @return: 若点击发生在图片所在区域，返回true,否则返回false
      **/
     private boolean isInner(double x, double y) {
         int size = DISPLAY_FLOW_PANE.getChildren().size();
@@ -180,6 +209,9 @@ public class PictureDisplayBar {
         return true;
     }
 
+    /**
+     * 刷新选中图片数
+     */
     public static void refreshBIBar() {
         ObservableList<Node> children = DISPLAY_FLOW_PANE.getChildren();
         int selected = 0;
@@ -192,19 +224,27 @@ public class PictureDisplayBar {
         new BottomInfoBar(selected);
     }
 
+    /**
+     * 初始化选择框，框选时显示
+     */
     private void initRectangle() {
         rectangle.setVisible(false);
         pane.getChildren().addAll(DISPLAY_FLOW_PANE, rectangle);
     }
 
+    /**
+     *
+     * @param start 矩形左上角点
+     * @param end   矩形右上角点
+     */
     private void showRectangle(Point start, Point end) {
-        rectangle.setVisible(true);
-        rectangle.setLayoutX(start.getX());
-        rectangle.setLayoutY(start.getY());
+        rectangle.setX(start.getX());
+        rectangle.setY(start.getY());
         rectangle.setWidth(end.getX() - start.getX());
         rectangle.setHeight(end.getY() - start.getY());
         rectangle.setStyle("-fx-border-color: #00F5FF;");
         rectangle.setFill(Paint.valueOf("00F5FF33"));
+        rectangle.setVisible(true);
 
         clickBlank = false;
     }

@@ -1,18 +1,16 @@
 package com.loungexi.ui;
 
-import javafx.collections.ObservableList;
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 
 import java.util.Optional;
 
 /**
+ * 报错弹窗类
  * @author Paul
  */
 public class AlertView {
-    public static enum AlertType {
+    public enum AlertType {
         /**
          * 数字类型错误
          */
@@ -20,8 +18,7 @@ public class AlertView {
         /**
          * 重命名错误,相同文件名文件已存在
          */
-        RenameError,
-        NameTypeError
+        RenameError
     }
 
     public static boolean showAlert(AlertType alertType){
@@ -32,12 +29,6 @@ public class AlertView {
                 alert.setTitle("数字类型/范围错误");
                 alert.setHeaderText("请输入正确的数字");
                 alert.setContentText("编号位数和起始编号的取值应大于0且不为空");
-                break;
-            case NameTypeError:
-                alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("名称类型错误");
-                alert.setHeaderText("请输入正确的名称");
-                alert.setContentText("请输入正确的名称");
                 break;
             case RenameError:
                 alert = new Alert(Alert.AlertType.ERROR);

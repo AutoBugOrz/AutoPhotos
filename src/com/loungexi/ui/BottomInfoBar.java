@@ -17,7 +17,6 @@ import java.io.File;
  * @author LoungeXi
  */
 public class BottomInfoBar {
-    //    private final VBox vBox = new VBox();
     private final HBox hBox;
     private final Label numberOfPictureLabel = new Label();
     private final Label sizeOfAllThePictureLabel = new Label();
@@ -25,6 +24,7 @@ public class BottomInfoBar {
     private Long numberOfPicture;
     private Double sizeOfAllThePicture;
     private static TreeItem<File> nowClickFile;
+    //选中图片数
     private int selectedPicture;
 
     public BottomInfoBar() {
@@ -37,6 +37,10 @@ public class BottomInfoBar {
         writeInformation();
     }
 
+    /**
+     * 刷新BottomInfoBar中的选中图片数
+     * @param selected 被选择的图片数
+     */
     public BottomInfoBar(int selected) {
         hBox = (HBox) MyBorderPane.getBorderPane().getBottom();
         ObservableList<Node> children = hBox.getChildren();

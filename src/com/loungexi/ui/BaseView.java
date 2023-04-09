@@ -37,6 +37,8 @@ public class BaseView {
         stage.setScene(scene);
         stage.setTitle("Photo Management Program");
         stage.show();
+
+
     }
 
 }

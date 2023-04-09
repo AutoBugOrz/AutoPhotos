@@ -25,6 +25,7 @@ public class DisplayItem extends VBox{
     private final Label imageLabel = new Label();
     private final Label imageNameLabel = new Label();
     private final Picture picture;
+    //当前图片缩略图是否被选中
     private boolean isSelected = false;
 
     public DisplayItem(Picture picture) {

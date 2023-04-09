@@ -3,6 +3,7 @@ package com.loungexi.utils;
 import javafx.scene.layout.BorderPane;
 
 /**
+ * MyBorderPane中存在一个BorderPane,以供对外调用
  * @author Paul
  */
 public class MyBorderPane {

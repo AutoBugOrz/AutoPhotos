@@ -1,6 +1,7 @@
 package com.loungexi.utils;
 
 /**
+ * 存放图片缩略图盒子宽高
  * @author Paul
  */
 public class VBoxData {
