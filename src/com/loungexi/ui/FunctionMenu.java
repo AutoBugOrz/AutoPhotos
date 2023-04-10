@@ -28,17 +28,21 @@ import java.util.List;
  * @author Paul
  */
 public class FunctionMenu {
-    private static ContextMenu contextMenu = new ContextMenu();
+    private static final ContextMenu contextMenu = new ContextMenu();
     private Stage stage;
     private String name;
     private String startId;
     private String digit;
+    private static MenuItem delete;
+    private static MenuItem copy;
+    private static MenuItem rename;
+    private static MenuItem paste;
 
     public FunctionMenu() {
-        MenuItem delete = new MenuItem("删除");
-        MenuItem copy = new MenuItem("复制");
-        MenuItem rename = new MenuItem("重命名");
-        MenuItem paste = new MenuItem("粘贴");
+        delete = new MenuItem("删除");
+        copy = new MenuItem("复制");
+        rename = new MenuItem("重命名");
+        paste = new MenuItem("粘贴");
 
         SelectedItem selectedItem = PictureDisplayBar.getSelectedItem();
 
@@ -55,7 +59,7 @@ public class FunctionMenu {
     }
 
     /**
-     * 图片复制
+     * 图片粘贴
      */
     private void pasteImg() {
         String newDirPath = DisplayItemController.getNowTreeItem().getValue().getPath() + File.separator;
@@ -360,6 +364,19 @@ public class FunctionMenu {
         new BottomInfoBar();
     }
 
+    /**
+     * 对右键菜单功能项设置可见属性
+     * @param b1 true: copy 项可见 false: copy 项不可见
+     * @param b2 true: paste 项可见 false: paste 项不可见
+     * @param b3 true: rename 项可见 false: rename 项不可见
+     * @param b4 true: delete 项可见 false: delete 项不可见
+     */
+    public static void setContextMenu(boolean b1, boolean b2, boolean b3, boolean b4) {
+       copy.setVisible(b1);
+       paste.setVisible(b2);
+       rename.setVisible(b3);
+       delete.setVisible(b4);
+    }
 
     public static ContextMenu getContextMenu() {
         return contextMenu;

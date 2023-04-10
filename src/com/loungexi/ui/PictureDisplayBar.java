@@ -9,12 +9,15 @@ import javafx.geometry.Insets;
 
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.Clipboard;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -37,6 +40,7 @@ public class PictureDisplayBar {
     private static boolean releaseDrag = false;
     //框选前，滚动条的初始位置
     private static double startVvalue;
+    private double bottomHeight;
 
 
     public PictureDisplayBar(BorderPane borderPane) {
@@ -62,11 +66,22 @@ public class PictureDisplayBar {
 
 
         scrollPane.setOnMouseClicked(mouseEvent -> {
+            //对发生在scrollPane上右键事件是否触发右键菜单功能进行逻辑判断
             if (mouseEvent.getButton() == MouseButton.SECONDARY && mouseEvent.getClickCount() == 1) {
                 if (FunctionMenu.getContextMenu().isShowing()) {
                     FunctionMenu.getContextMenu().hide();
                 } else {
-                    FunctionMenu.getContextMenu().show(scrollPane, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+                    if(selectedItem.getItems().size() > 0){
+                        FunctionMenu.setContextMenu(true,true,true,true);
+                        FunctionMenu.getContextMenu().show(scrollPane, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+                    }else{
+                        Clipboard clipboard = Clipboard.getSystemClipboard();
+                        List<File> files = clipboard.getFiles();
+                        if(files.size() > 0){
+                            FunctionMenu.setContextMenu(false,true,false,false);
+                            FunctionMenu.getContextMenu().show(scrollPane, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+                        }
+                    }
                 }
             }
             if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 1) {
@@ -88,13 +103,17 @@ public class PictureDisplayBar {
 
         AnchorPane.setLeftAnchor(DISPLAY_FLOW_PANE, 0.0);
         AnchorPane.setTopAnchor(DISPLAY_FLOW_PANE, 0.0);
-        AnchorPane.setBottomAnchor(DISPLAY_FLOW_PANE, 0.0);
+//        AnchorPane.setBottomAnchor(DISPLAY_FLOW_PANE, 0.0);
         AnchorPane.setRightAnchor(DISPLAY_FLOW_PANE, 0.0);
 
         DISPLAY_FLOW_PANE.setOnMousePressed(mouseEvent -> {
             if (mouseEvent.isPrimaryButtonDown()) {
                 mouseStart = new Point(mouseEvent.getX(), mouseEvent.getY());
                 startVvalue = scrollPane.getVvalue();
+
+                ObservableList<Node> children = DISPLAY_FLOW_PANE.getChildren();
+                DisplayItem item = (DisplayItem) children.get(children.size() - 1);
+                bottomHeight = item.getLayoutY() + VBoxData.vBoxHeight + DISPLAY_FLOW_PANE.getVgap();
             }
         });
 
@@ -138,9 +157,14 @@ public class PictureDisplayBar {
                    double y = mouseDragged.getY();
                    mouseDragged = new Point(x, y);
                }
+                if(mouseEvent.getY() > bottomHeight){
+                    double x = mouseDragged.getX();
+                    double y = bottomHeight;
+                    mouseDragged = new Point(x, y);
+                }
 
                //滚动条位置跟随
-                double moveY = mouseStart.getY() - mouseEvent.getY();
+                double moveY = mouseStart.getY() - mouseDragged.getY();
                 scrollPane.setVvalue(startVvalue - (moveY / (DISPLAY_FLOW_PANE.getHeight() - scrollPane.getHeight())) / 3);
 
                 //判断矩形是否框选中图片
