@@ -61,6 +61,7 @@ public class PictureDisplayBar {
     private void setScrollPane() {
         scrollPane.setFitToWidth(true);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setContent(pane);
         new FunctionMenu();
 
@@ -71,16 +72,8 @@ public class PictureDisplayBar {
                 if (FunctionMenu.getContextMenu().isShowing()) {
                     FunctionMenu.getContextMenu().hide();
                 } else {
-                    if(selectedItem.getItems().size() > 0){
-                        FunctionMenu.setContextMenu(true,true,true,true);
+                    if (selectedItem.getItems().size() > 0){
                         FunctionMenu.getContextMenu().show(scrollPane, mouseEvent.getScreenX(), mouseEvent.getScreenY());
-                    }else{
-                        Clipboard clipboard = Clipboard.getSystemClipboard();
-                        List<File> files = clipboard.getFiles();
-                        if(files.size() > 0){
-                            FunctionMenu.setContextMenu(false,true,false,false);
-                            FunctionMenu.getContextMenu().show(scrollPane, mouseEvent.getScreenX(), mouseEvent.getScreenY());
-                        }
                     }
                 }
             }
@@ -103,12 +96,12 @@ public class PictureDisplayBar {
 
         AnchorPane.setLeftAnchor(DISPLAY_FLOW_PANE, 0.0);
         AnchorPane.setTopAnchor(DISPLAY_FLOW_PANE, 0.0);
-//        AnchorPane.setBottomAnchor(DISPLAY_FLOW_PANE, 0.0);
+        AnchorPane.setBottomAnchor(DISPLAY_FLOW_PANE, 0.0);
         AnchorPane.setRightAnchor(DISPLAY_FLOW_PANE, 0.0);
 
         DISPLAY_FLOW_PANE.setOnMousePressed(mouseEvent -> {
-            if (mouseEvent.isPrimaryButtonDown()) {
-                mouseStart = new Point(mouseEvent.getX(), mouseEvent.getY());
+            mouseStart = new Point(mouseEvent.getX(), mouseEvent.getY());
+            if (mouseEvent.isPrimaryButtonDown() && DISPLAY_FLOW_PANE.getChildren().size() > 0) {
                 startVvalue = scrollPane.getVvalue();
 
                 ObservableList<Node> children = DISPLAY_FLOW_PANE.getChildren();
@@ -121,27 +114,29 @@ public class PictureDisplayBar {
             double x = mouseEvent.getX();
             double y = mouseEvent.getY();
 
-            /**
-             * 若左键单击事件发生在非图片区域上，则取消选中FlowPane上的所有被选中图片
-             * releaseDrag判断是否为普通单击事件，还是框选操作后释放触发的单击事件
-             */
-            if (mouseEvent.getButton() == MouseButton.PRIMARY && !releaseDrag) {
-                if (!isInner(x, y) && selectedItem.getItems().size() == 1) {
-                    selectedItem.getItems().get(0).setSelected(false);
-                    selectedItem.removeUnselected();
-                    refreshBIBar();
-                }
-                if (!isInner(x, y) && clickBlank && selectedItem.getItems().size() > 1) {
-                    ArrayList<DisplayItem> items = selectedItem.getItems();
-                    for (int i = 0; i < items.size(); i++) {
-                        items.get(i).setSelected(false);
+            if(DISPLAY_FLOW_PANE.getChildren().size() > 0) {
+                /**
+                 * 若左键单击事件发生在非图片区域上，则取消选中FlowPane上的所有被选中图片
+                 * releaseDrag判断是否为普通单击事件，还是框选操作后释放触发的单击事件
+                 */
+                if (mouseEvent.getButton() == MouseButton.PRIMARY && !releaseDrag) {
+                    if (!isInner(x, y) && selectedItem.getItems().size() == 1) {
+                        selectedItem.getItems().get(0).setSelected(false);
+                        selectedItem.removeUnselected();
+                        refreshBIBar();
                     }
-                    selectedItem.removeUnselected();
-                    refreshBIBar();
+                    if (!isInner(x, y) && clickBlank && selectedItem.getItems().size() > 1) {
+                        ArrayList<DisplayItem> items = selectedItem.getItems();
+                        for (int i = 0; i < items.size(); i++) {
+                            items.get(i).setSelected(false);
+                        }
+                        selectedItem.removeUnselected();
+                        refreshBIBar();
+                    }
                 }
+                //普通单击事件发生，releaseDrag置为false
+                releaseDrag = false;
             }
-            //普通单击事件发生，releaseDrag置为false
-            releaseDrag = false;
         });
 
         DISPLAY_FLOW_PANE.setOnMouseDragged(mouseEvent -> {

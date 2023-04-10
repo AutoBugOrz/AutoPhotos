@@ -1,6 +1,5 @@
 package com.loungexi.controller;
 
-import com.loungexi.pojo.SelectedItem;
 import com.loungexi.ui.BottomInfoBar;
 import com.loungexi.ui.PictureDetailBar;
 import com.loungexi.ui.PictureDisplayBar;

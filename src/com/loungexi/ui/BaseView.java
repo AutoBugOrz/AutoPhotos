@@ -2,6 +2,7 @@ package com.loungexi.ui;
 
 import com.loungexi.utils.HomePage;
 import com.loungexi.utils.MyBorderPane;
+import com.loungexi.utils.VBoxData;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
@@ -38,7 +39,7 @@ public class BaseView {
         stage.setTitle("Photo Management Program");
         stage.show();
 
-
+        PictureDisplayBar.pane.setMinHeight(borderPane.getCenter().getScene().getHeight());
     }
 
 }

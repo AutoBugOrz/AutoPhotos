@@ -15,16 +15,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 
 /**
  * 右键功能实现类
+ *
  * @author Paul
  */
 public class FunctionMenu {
@@ -65,21 +63,118 @@ public class FunctionMenu {
         String newDirPath = DisplayItemController.getNowTreeItem().getValue().getPath() + File.separator;
         Clipboard clipboard = Clipboard.getSystemClipboard();
         List<File> files = clipboard.getFiles();
-        for (File file : files) {
-            File newFile = new File(newDirPath + file.getName());
-            try (FileInputStream is = new FileInputStream(file);
-                 FileOutputStream os = new FileOutputStream(newFile)) {
-                byte[] buffer = new byte[1024];
-                int length;
-                while ((length = is.read(buffer)) != -1) {
-                    os.write(buffer, 0, length);
+        if (DisplayItemController.getNowTreeItem().equals(DisplayItemController.getPasteSrcTreeItem())) {
+            writePastedFile(newDirPath, files, 0);
+        } else {
+            writePastedFile(newDirPath, files, 1);
+        }
+        refresh();
+    }
+
+    /**
+     * @param newDirPath 新的目录路径,最后存在File.separator
+     * @param files      要粘贴的图片文件集
+     * @param renameType 值为0时，表示粘贴目录与图片源目录相同; 值为1时,表示粘贴目录与图片源目录不相同
+     */
+    private void writePastedFile(String newDirPath, List<File> files, int renameType) {
+        if (renameType == 0) {
+            Rename(newDirPath,files);
+        }
+        //将文件粘贴到不同目录下
+        if (renameType == 1) {
+            /**
+             * 若粘贴目录下存在图片文件，则还需要判断粘贴的图片文件是否与粘贴目录下的文件发生同名冲突
+             * 若存在同名冲突，则需要对发生同名冲突的粘贴图片文件进行自动重命名
+             * 自动重命名格式为: 原名字 + - 副本(index) + 后缀
+             * 若粘贴目录下不存在图片文件，则直接将粘贴图片写入到粘贴目录下
+             */
+            if (PictureDisplayBar.DISPLAY_FLOW_PANE.getChildren().size() > 0) {
+                Rename(newDirPath,files);
+            } else {
+                for (File file : files) {
+                    File newFile = new File(newDirPath + file.getName());
+                    writeFile(file, newFile);
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
-        new DisplayItemController();
-        new BottomInfoBar();
+    }
+
+    /**
+     * 得到粘贴目录下所有图片的名字
+     * @param newDirImgFileNames 所有图片的名字数列
+     * @param dirPath 粘贴目录，最后存在File.separator（分隔符）
+     */
+    public void getDirFilesName(ArrayList<String> newDirImgFileNames, String dirPath){
+        String path = dirPath.substring(0,dirPath.length() - 1);
+        File dirFile = new File(path);
+        File[] list = dirFile.listFiles(pathname -> {
+            String suffix1 = pathname.getName().substring(pathname.getName().lastIndexOf('.') + 1);
+            return "png".equalsIgnoreCase(suffix1) || "jpg".equalsIgnoreCase(suffix1) || "jpeg".equalsIgnoreCase(suffix1)
+                    || "gif".equalsIgnoreCase(suffix1) || "bmp".equalsIgnoreCase(suffix1);
+        });
+
+        for (int i = 0; i < list.length; i++) {
+            newDirImgFileNames.add(list[i].getName());
+        }
+    }
+
+    /**
+     * 粘贴目录下存在图片时，该方法可处理同名冲突，将发生同名冲突的粘贴文件自动重命名
+     * @param newDirPath 粘贴目录，最后存在File.separator（分隔符）
+     * @param files 要粘贴的图片文件集
+     */
+    public void Rename(String newDirPath, List<File> files){
+        ArrayList<String> newDirImgFileNames = new ArrayList<>();
+        String suffix;
+
+        for (File file : files) {
+            getDirFilesName(newDirImgFileNames,newDirPath);
+            int index = 1;
+            String fileName = file.getName();
+
+            suffix = "." + file.getName().substring(file.getName().lastIndexOf('.') + 1);
+
+            //判断是否发生重名冲突
+            for (int i = 0; i < newDirImgFileNames.size(); i++) {
+                if (newDirImgFileNames.contains(fileName)) {
+                    String rename;
+                    if(fileName.lastIndexOf('-') == -1) {
+                        rename = fileName.substring(0,fileName.lastIndexOf('.'));
+                        fileName =  rename + " - 副本(" + index + ")" + suffix;
+                        while (newDirImgFileNames.contains(fileName)){
+                            index++;
+                            fileName =  rename + " - 副本(" + index + ")" + suffix;
+                        }
+                    }else{
+                        index = Integer.parseInt(fileName.substring(fileName.lastIndexOf('(') + 1, fileName.lastIndexOf(')')));
+                        rename = fileName.substring(0, fileName.lastIndexOf('-') - 1);
+                        index++;
+                        fileName =  rename + " - 副本(" + index + ")" + suffix;
+                    }
+                }
+            }
+
+            File newFile = new File(newDirPath + fileName);
+            writeFile(file, newFile);
+        }
+    }
+
+    /**
+     * 将粘贴文件写入到粘贴目录中，表现为粘贴成功
+     * @param srcfile 粘贴文件
+     * @param newFile 粘贴目录下新文件
+     */
+    private void writeFile(File srcfile, File newFile) {
+        try (FileInputStream is = new FileInputStream(srcfile);
+             FileOutputStream os = new FileOutputStream(newFile)) {
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = is.read(buffer)) != -1) {
+                os.write(buffer, 0, length);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -326,6 +421,7 @@ public class FunctionMenu {
 
     /**
      * 复制图片
+     *
      * @param selectedItem 被选中的图片缩略图集
      */
     private void copyImg(SelectedItem selectedItem) {
@@ -335,6 +431,7 @@ public class FunctionMenu {
         ClipboardContent content = new ClipboardContent();
         content.putFiles(files);
         clipboard.setContent(content);
+        DisplayItemController.setPasteSrcTreeItem(DisplayItemController.getNowTreeItem());
     }
 
     /**
@@ -362,20 +459,6 @@ public class FunctionMenu {
         PictureDetailBar.DETAIL_FLOW_PANE.getChildren().clear();
         new DisplayItemController();
         new BottomInfoBar();
-    }
-
-    /**
-     * 对右键菜单功能项设置可见属性
-     * @param b1 true: copy 项可见 false: copy 项不可见
-     * @param b2 true: paste 项可见 false: paste 项不可见
-     * @param b3 true: rename 项可见 false: rename 项不可见
-     * @param b4 true: delete 项可见 false: delete 项不可见
-     */
-    public static void setContextMenu(boolean b1, boolean b2, boolean b3, boolean b4) {
-       copy.setVisible(b1);
-       paste.setVisible(b2);
-       rename.setVisible(b3);
-       delete.setVisible(b4);
     }
 
     public static ContextMenu getContextMenu() {
