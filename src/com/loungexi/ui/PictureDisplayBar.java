@@ -31,14 +31,22 @@ public class PictureDisplayBar {
     private static final Rectangle rectangle = new Rectangle();
     private static Point mouseStart;
     private static Point mouseDragged;
-    //当前目录下的被选中图片Item
+    /**
+     * 当前目录下的被选中图片Item
+     */
     private static final SelectedItem selectedItem = new SelectedItem();
     public static AnchorPane pane = new AnchorPane();
-    //判断点击事件是否发生在图片区域
+    /**
+     * 判断点击事件是否发生在图片区域
+     */
     private static boolean clickBlank = false;
-    //判断是否为框选完成后的第一次释放点击
+    /**
+     * 判断是否为框选完成后的第一次释放点击
+     */
     private static boolean releaseDrag = false;
-    //框选前，滚动条的初始位置
+    /**
+     * 框选前，滚动条的初始位置
+     */
     private static double startVvalue;
     private double bottomHeight;
 
@@ -64,7 +72,6 @@ public class PictureDisplayBar {
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setContent(pane);
         new FunctionMenu();
-
 
         scrollPane.setOnMouseClicked(mouseEvent -> {
             //对发生在scrollPane上右键事件是否触发右键菜单功能进行逻辑判断
@@ -159,7 +166,7 @@ public class PictureDisplayBar {
                 }
 
                //滚动条位置跟随
-                double moveY = mouseStart.getY() - mouseDragged.getY();
+                double moveY = mouseStart.getY() - mouseEvent.getY();
                 scrollPane.setVvalue(startVvalue - (moveY / (DISPLAY_FLOW_PANE.getHeight() - scrollPane.getHeight())) / 3);
 
                 //判断矩形是否框选中图片

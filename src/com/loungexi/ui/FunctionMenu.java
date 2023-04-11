@@ -31,10 +31,11 @@ public class FunctionMenu {
     private String name;
     private String startId;
     private String digit;
-    private static MenuItem delete;
-    private static MenuItem copy;
-    private static MenuItem rename;
-    private static MenuItem paste;
+    private MenuItem delete;
+    private MenuItem copy;
+    private MenuItem rename;
+    private MenuItem paste;
+    private SelectedItem selectedItem = PictureDisplayBar.getSelectedItem();
 
     public FunctionMenu() {
         delete = new MenuItem("删除");
@@ -42,13 +43,11 @@ public class FunctionMenu {
         rename = new MenuItem("重命名");
         paste = new MenuItem("粘贴");
 
-        SelectedItem selectedItem = PictureDisplayBar.getSelectedItem();
-
         delete.setOnAction(actionEvent -> deleteImg());
 
-        copy.setOnAction(actionEvent -> copyImg(selectedItem));
+        copy.setOnAction(actionEvent -> copyImg());
 
-        rename.setOnAction(actionEvent -> renameImg(selectedItem));
+        rename.setOnAction(actionEvent -> renameImg());
 
         paste.setOnAction(actionEvent -> pasteImg());
 
@@ -78,18 +77,18 @@ public class FunctionMenu {
      */
     private void writePastedFile(String newDirPath, List<File> files, int renameType) {
         if (renameType == 0) {
-            Rename(newDirPath,files);
+            pasteRename(newDirPath, files);
         }
         //将文件粘贴到不同目录下
         if (renameType == 1) {
-            /**
+            /*
              * 若粘贴目录下存在图片文件，则还需要判断粘贴的图片文件是否与粘贴目录下的文件发生同名冲突
              * 若存在同名冲突，则需要对发生同名冲突的粘贴图片文件进行自动重命名
              * 自动重命名格式为: 原名字 + - 副本(index) + 后缀
              * 若粘贴目录下不存在图片文件，则直接将粘贴图片写入到粘贴目录下
              */
             if (PictureDisplayBar.DISPLAY_FLOW_PANE.getChildren().size() > 0) {
-                Rename(newDirPath,files);
+                pasteRename(newDirPath, files);
             } else {
                 for (File file : files) {
                     File newFile = new File(newDirPath + file.getName());
@@ -101,11 +100,12 @@ public class FunctionMenu {
 
     /**
      * 得到粘贴目录下所有图片的名字
+     *
      * @param newDirImgFileNames 所有图片的名字数列
-     * @param dirPath 粘贴目录，最后存在File.separator（分隔符）
+     * @param dirPath            粘贴目录，最后存在File.separator（分隔符）
      */
-    public void getDirFilesName(ArrayList<String> newDirImgFileNames, String dirPath){
-        String path = dirPath.substring(0,dirPath.length() - 1);
+    public void getDirFilesName(ArrayList<String> newDirImgFileNames, String dirPath) {
+        String path = dirPath.substring(0, dirPath.length() - 1);
         File dirFile = new File(path);
         File[] list = dirFile.listFiles(pathname -> {
             String suffix1 = pathname.getName().substring(pathname.getName().lastIndexOf('.') + 1);
@@ -120,36 +120,40 @@ public class FunctionMenu {
 
     /**
      * 粘贴目录下存在图片时，该方法可处理同名冲突，将发生同名冲突的粘贴文件自动重命名
+     *
      * @param newDirPath 粘贴目录，最后存在File.separator（分隔符）
-     * @param files 要粘贴的图片文件集
+     * @param files      要粘贴的图片文件集
      */
-    public void Rename(String newDirPath, List<File> files){
+    public void pasteRename(String newDirPath, List<File> files) {
         ArrayList<String> newDirImgFileNames = new ArrayList<>();
         String suffix;
 
         for (File file : files) {
-            getDirFilesName(newDirImgFileNames,newDirPath);
+            getDirFilesName(newDirImgFileNames, newDirPath);
             int index = 1;
             String fileName = file.getName();
 
             suffix = "." + file.getName().substring(file.getName().lastIndexOf('.') + 1);
 
-            //判断是否发生重名冲突
-            for (int i = 0; i < newDirImgFileNames.size(); i++) {
-                if (newDirImgFileNames.contains(fileName)) {
-                    String rename;
-                    if(fileName.lastIndexOf('-') == -1) {
-                        rename = fileName.substring(0,fileName.lastIndexOf('.'));
-                        fileName =  rename + " - 副本(" + index + ")" + suffix;
-                        while (newDirImgFileNames.contains(fileName)){
-                            index++;
-                            fileName =  rename + " - 副本(" + index + ")" + suffix;
-                        }
-                    }else{
-                        index = Integer.parseInt(fileName.substring(fileName.lastIndexOf('(') + 1, fileName.lastIndexOf(')')));
-                        rename = fileName.substring(0, fileName.lastIndexOf('-') - 1);
+            /* 判断是否发生重名冲突 */
+            if (newDirImgFileNames.contains(fileName)) {
+                String rename;
+                if (fileName.lastIndexOf('-') == -1) {
+                    rename = fileName.substring(0, fileName.lastIndexOf('.'));
+                    fileName = rename + " - 副本(" + index + ")" + suffix;
+                    while (newDirImgFileNames.contains(fileName)) {
                         index++;
-                        fileName =  rename + " - 副本(" + index + ")" + suffix;
+                        fileName = rename + " - 副本(" + index + ")" + suffix;
+                    }
+                } else {
+                    //TODO: logical
+                    index = Integer.parseInt(fileName.substring(fileName.lastIndexOf('(') + 1, fileName.lastIndexOf(')')));
+                    rename = fileName.substring(0, fileName.lastIndexOf('-') - 1);
+                    index++;
+                    fileName = rename + " - 副本(" + index + ")" + suffix;
+                    while (newDirImgFileNames.contains(fileName)) {
+                        index++;
+                        fileName = rename + " - 副本(" + index + ")" + suffix;
                     }
                 }
             }
@@ -161,6 +165,7 @@ public class FunctionMenu {
 
     /**
      * 将粘贴文件写入到粘贴目录中，表现为粘贴成功
+     *
      * @param srcfile 粘贴文件
      * @param newFile 粘贴目录下新文件
      */
@@ -179,210 +184,238 @@ public class FunctionMenu {
 
     /**
      * 图片重命名
-     * @param selectedItem 选中的重命名图片集
+     *
      */
-    private void renameImg(SelectedItem selectedItem) {
+    private void renameImg() {
         ArrayList<DisplayItem> items = selectedItem.getItems();
 
         //单图片的重命名
         if (items.size() == 1) {
-            //得到图片文件的路径
-            String path = items.get(0).getPicture().getImage().getUrl().substring(5);
-            items.get(0).setSelected(false);
-            File file = new File(path);
-            TextField textField = new TextField();
-            stage = new Stage();
-            stage.setAlwaysOnTop(true);
-            stage.setResizable(false);
-            stage.setMaximized(false);
-            stage.setTitle("重命名");
-
-            Button confirm = new Button("确认");
-            Button cancel = new Button("取消");
-
-            VBox vBox = new VBox();
-            HBox hBox = new HBox();
-            vBox.getChildren().addAll(textField, hBox);
-            vBox.setAlignment(Pos.CENTER);
-            vBox.setPadding(new Insets(10));
-
-            hBox.getChildren().addAll(confirm, cancel);
-            hBox.setAlignment(Pos.CENTER);
-            hBox.setMargin(confirm, new Insets(10, 0, 0, 10));
-            hBox.setMargin(cancel, new Insets(10, 10, 0, 10));
-
-            Scene scene = new Scene(vBox);
-            stage.setScene(scene);
-            stage.setWidth(HomePage.WIDTH * 0.25);
-            stage.setHeight(HomePage.HEIGHT * 0.15);
-            stage.show();
-
-            String suffix = file.getAbsolutePath().substring(file.getAbsolutePath().lastIndexOf(".") + 1);
-
-            textField.setOnAction(actionEvent ->
-            {
-                String newName = file.getParentFile().getAbsolutePath() + '/' + textField.getText() + '.' + suffix;
-                reNameOne(file, newName, selectedItem);
-            });
-
-            confirm.setOnAction(actionEvent -> {
-                String newName = file.getParentFile().getAbsolutePath() + '/' + textField.getText() + '.' + suffix;
-                reNameOne(file, newName, selectedItem);
-            });
-
-            cancel.setOnAction(actionEvent -> {
-                selectedItem.unselected(items.get(0));
-                stage.close();
-            });
-
+            oneImgRename();
         } else if (items.size() > 1) {
-            //多图片的重命名
-            GridPane gridPane = new GridPane();
-            Label nameLabel = new Label("图片名:");
-            TextField nameField = new TextField();
-            Label startIdLabel = new Label("起始编号:");
-            TextField startIdField = new TextField();
-            Label digitLabel = new Label("编号位数:");
-            TextField digitField = new TextField();
-
-            Button confirm = new Button("确认");
-            confirm.setDefaultButton(true);
-            confirm.setOnAction(actionEvent ->
-            {
-                name = nameField.getText();
-                startId = startIdField.getText();
-                digit = digitField.getText();
-
-                if (startId != "" && digit != "" && Integer.parseInt(digit) > 0 && Integer.parseInt(startId) > 0) {
-                    int startIdInt = Integer.parseInt(startId);
-
-                    //存储当前FlowPane中所展示的所有图片文件的文件数组
-                    File[] files;
-                    //存储所有的新重命名的名字的数列
-                    ArrayList<String> newNames = new ArrayList<>();
-
-                    String path = items.get(0).getPicture().getImage().getUrl().substring(5);
-                    File file = new File(path);
-                    File parentFile = file.getParentFile();
-                    //得到当前FlowPane中所展示的所有图片文件
-                    files = parentFile.listFiles();
-
-                    //先得到所有的新重命名的名字
-                    for (int i = 0; i < items.size(); i++) {
-                        DisplayItem item = items.get(i);
-                        path = item.getPicture().getImage().getUrl().substring(5);
-                        String suffix = path.substring(path.lastIndexOf(".") + 1);
-                        String newName = String.format(name + "%0" + digit + "d" + "." + suffix, startIdInt++);
-
-                        newNames.add(newName);
-                    }
-                    //判断在被选中图片外是否存在有与重命名名字相同名字的图片文件
-                    if (isExistSameNameFile(files, items, newNames)) {
-                        stage.setAlwaysOnTop(false);
-                        //存在重名图片文件，提示报错信息
-                        if (AlertView.showAlert(AlertView.AlertType.RenameError)) {
-                            stage.close();
-                            renameImg(selectedItem);
-                        }
-                    } else {
-                        //被选中图片中不重名的图片文件数列
-                        ArrayList<File> fileList = new ArrayList<>();
-
-                        /**
-                         * 在多选的图片中可能会存在与重命名名字相同的图片
-                         * 通过这个for循环，将与重命名名字相同的被选择重命名文件剔除，同时去除同名的newName
-                         * 不重名的被选择图片文件加入到fileList中
-                         * 表现为不发生重名冲突的文件被重命名，发生重名冲突的文件不重名，可视为文件重命名后的名字与原名字相同
-                         */
-                        for (int i = 0; i < items.size(); i++) {
-                            DisplayItem item = items.get(i);
-
-                            path = item.getPicture().getImage().getUrl().substring(5);
-                            file = new File(path);
-
-                            fileList.add(file);
-
-                            for (int j = 0; j < newNames.size(); j++) {
-                                if (file.getName().equals(newNames.get(j))) {
-                                    fileList.remove(file);
-                                    newNames.remove(newNames.get(j));
-                                }
-                            }
-                            item.setSelected(false);
-                        }
-                        /**
-                         * 将不发生重名冲突的被选择图片文件进行重命名
-                         */
-                        for (int i = 0; i < fileList.size(); i++) {
-                            file = fileList.get(i);
-                            File newNameFile = new File(file.getParentFile().getAbsolutePath() + '/' + newNames.get(0));
-                            newNames.remove(0);
-                            file.renameTo(newNameFile);
-                        }
-                        stage.close();
-                        refresh();
-                    }
-
-                } else {
-                    if (startId == "" || digit == "" || Integer.parseInt(digit) <= 0 || Integer.parseInt(startId) <= 0) {
-                        stage.setAlwaysOnTop(false);
-                        if (AlertView.showAlert(AlertView.AlertType.NumberTypeError)) {
-                            stage.close();
-                            renameImg(selectedItem);
-                        }
-                    }
-                }
-            });
-
-            Button cancel = new Button("取消");
-            cancel.setCancelButton(true);
-
-            cancel.setOnAction(actionEvent ->
-            {
-                name = null;
-                startId = null;
-                digit = null;
-                stage.close();
-            });
-
-            HBox hBox = new HBox();
-            hBox.getChildren().addAll(confirm, cancel);
-            hBox.setMargin(confirm, new Insets(0, 10, 0, 15));
-
-            gridPane.add(nameLabel, 0, 0);
-            gridPane.add(nameField, 1, 0);
-            gridPane.add(startIdLabel, 0, 1);
-            gridPane.add(startIdField, 1, 1);
-            gridPane.add(digitLabel, 0, 2);
-            gridPane.add(digitField, 1, 2);
-            gridPane.add(hBox, 1, 3);
-
-            gridPane.setPadding(new Insets(10));
-            GridPane.setMargin(hBox, new Insets(5));
-            GridPane.setMargin(nameField, new Insets(5));
-            GridPane.setMargin(startIdField, new Insets(5));
-            GridPane.setMargin(digitField, new Insets(5));
-
-            stage = new Stage();
-            stage.setAlwaysOnTop(true);
-            stage.setResizable(false);
-            stage.setMaximized(false);
-            stage.setTitle("重命名");
-            stage.setScene(new Scene(gridPane));
-            stage.show();
+            multipleImgRename();
         }
     }
 
     /**
-     * 单张图片的重命名方法
+     * 多图片的重命名
      */
-    private void reNameOne(File file, String name, SelectedItem selectedItem) {
+    private void multipleImgRename() {
+        ArrayList<DisplayItem> items = selectedItem.getItems();
+        //多图片的重命名
+        GridPane gridPane = new GridPane();
+        Label nameLabel = new Label("图片名:");
+        TextField nameField = new TextField();
+        Label startIdLabel = new Label("起始编号:");
+        TextField startIdField = new TextField();
+        Label digitLabel = new Label("编号位数:");
+        TextField digitField = new TextField();
+
+        Button confirm = new Button("确认");
+        /*键盘enter按下，触发confirm按钮的点击事件*/
+        confirm.setDefaultButton(true);
+        setMulReConfirmAction(confirm, nameField, startIdField, digitField);
+
+        Button cancel = new Button("取消");
+        cancel.setCancelButton(true);
+
+        cancel.setOnAction(actionEvent ->
+        {
+            name = null;
+            startId = null;
+            digit = null;
+            stage.close();
+        });
+
+        HBox hBox = new HBox();
+        hBox.getChildren().addAll(confirm, cancel);
+        HBox.setMargin(confirm, new Insets(0, 10, 0, 15));
+
+        gridPane.add(nameLabel, 0, 0);
+        gridPane.add(nameField, 1, 0);
+        gridPane.add(startIdLabel, 0, 1);
+        gridPane.add(startIdField, 1, 1);
+        gridPane.add(digitLabel, 0, 2);
+        gridPane.add(digitField, 1, 2);
+        gridPane.add(hBox, 1, 3);
+
+        gridPane.setPadding(new Insets(10));
+        GridPane.setMargin(hBox, new Insets(5));
+        GridPane.setMargin(nameField, new Insets(5));
+        GridPane.setMargin(startIdField, new Insets(5));
+        GridPane.setMargin(digitField, new Insets(5));
+
+        stage = new Stage();
+        stage.setAlwaysOnTop(true);
+        stage.setResizable(false);
+        stage.setMaximized(false);
+        stage.setTitle("重命名");
+        stage.setScene(new Scene(gridPane));
+        stage.show();
+    }
+
+    /**
+     * 多图片重命名确认按钮的点击事件设置
+     * @param confirm 确认按钮
+     * @param nameField 重命名名字
+     * @param startIdField 起始编号
+     * @param digitField 编号位数
+     */
+    private void setMulReConfirmAction(Button confirm, TextField nameField, TextField startIdField, TextField digitField) {
+        ArrayList<DisplayItem> items = selectedItem.getItems();
+        confirm.setOnAction(actionEvent ->
+        {
+            name = nameField.getText();
+            startId = startIdField.getText();
+            digit = digitField.getText();
+
+            if (!"".equals(startId) && !"".equals(digit) && Integer.parseInt(digit) > 0 && Integer.parseInt(startId) > 0) {
+                int startIdInt = Integer.parseInt(startId);
+
+                //存储当前FlowPane中所展示的所有图片文件的文件数组
+                File[] files;
+                //存储所有的新重命名的名字的数列
+                ArrayList<String> newNames = new ArrayList<>();
+
+                String path = items.get(0).getPicture().getImage().getUrl().substring(5);
+                File file = new File(path);
+                File parentFile = file.getParentFile();
+                //得到当前FlowPane中所展示的所有图片文件
+                files = parentFile.listFiles();
+
+                //先得到所有的新重命名的名字
+                for (int i = 0; i < items.size(); i++) {
+                    DisplayItem item = items.get(i);
+                    path = item.getPicture().getImage().getUrl().substring(5);
+                    String suffix = path.substring(path.lastIndexOf(".") + 1);
+                    String newName = String.format(name + "%0" + digit + "d" + "." + suffix, startIdInt++);
+
+                    newNames.add(newName);
+                }
+                //判断在被选中图片外是否存在有与重命名名字相同名字的图片文件
+                if (isExistSameNameFile(files, items, newNames)) {
+                    stage.setAlwaysOnTop(false);
+                    //存在重名图片文件，提示报错信息
+                    if (AlertView.showAlert(AlertView.AlertType.RenameError)) {
+                        stage.close();
+                        renameImg();
+                    }
+                } else {
+                    //被选中图片中不重名的图片文件数列
+                    ArrayList<File> fileList = new ArrayList<>();
+
+                    /**
+                     * 在多选的图片中可能会存在与重命名名字相同的图片
+                     * 通过这个for循环，将与重命名名字相同的被选择重命名文件剔除，同时去除同名的newName
+                     * 不重名的被选择图片文件加入到fileList中
+                     * 表现为不发生重名冲突的文件被重命名，发生重名冲突的文件不重名，可视为文件重命名后的名字与原名字相同
+                     */
+                    for (int i = 0; i < items.size(); i++) {
+                        DisplayItem item = items.get(i);
+
+                        path = item.getPicture().getImage().getUrl().substring(5);
+                        file = new File(path);
+
+                        fileList.add(file);
+
+                        for (int j = 0; j < newNames.size(); j++) {
+                            if (file.getName().equals(newNames.get(j))) {
+                                fileList.remove(file);
+                                newNames.remove(newNames.get(j));
+                            }
+                        }
+                        item.setSelected(false);
+                    }
+                    /**
+                     * 将不发生重名冲突的被选择图片文件进行重命名
+                     */
+                    for (int i = 0; i < fileList.size(); i++) {
+                        file = fileList.get(i);
+                        File newNameFile = new File(file.getParentFile().getAbsolutePath() + '/' + newNames.get(0));
+                        newNames.remove(0);
+                        file.renameTo(newNameFile);
+                    }
+                    stage.close();
+                    refresh();
+                }
+
+            } else {
+                if ("".equals(startId) || "".equals(digit) || Integer.parseInt(digit) <= 0 || Integer.parseInt(startId) <= 0) {
+                    stage.setAlwaysOnTop(false);
+                    if (AlertView.showAlert(AlertView.AlertType.NumberTypeError)) {
+                        stage.close();
+                        renameImg();
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * 单张图片的重名名方法
+     */
+    private void oneImgRename() {
+        ArrayList<DisplayItem> items = selectedItem.getItems();
+        //得到图片文件的路径
+        String path = items.get(0).getPicture().getImage().getUrl().substring(5);
+        items.get(0).setSelected(false);
+        File file = new File(path);
+        TextField textField = new TextField();
+        stage = new Stage();
+        stage.setAlwaysOnTop(true);
+        stage.setResizable(false);
+        stage.setMaximized(false);
+        stage.setTitle("重命名");
+
+        Button confirm = new Button("确认");
+        Button cancel = new Button("取消");
+
+        VBox vBox = new VBox();
+        HBox hBox = new HBox();
+        vBox.getChildren().addAll(textField, hBox);
+        vBox.setAlignment(Pos.CENTER);
+        vBox.setPadding(new Insets(10));
+
+        hBox.getChildren().addAll(confirm, cancel);
+        hBox.setAlignment(Pos.CENTER);
+        HBox.setMargin(confirm, new Insets(10, 0, 0, 10));
+        HBox.setMargin(cancel, new Insets(10, 10, 0, 10));
+
+        Scene scene = new Scene(vBox);
+        stage.setScene(scene);
+        stage.setWidth(HomePage.WIDTH * 0.25);
+        stage.setHeight(HomePage.HEIGHT * 0.15);
+        stage.show();
+
+        String suffix = file.getAbsolutePath().substring(file.getAbsolutePath().lastIndexOf(".") + 1);
+
+        textField.setOnAction(actionEvent ->
+        {
+            String newName = file.getParentFile().getAbsolutePath() + '/' + textField.getText() + '.' + suffix;
+            renameOneImg(file, newName, selectedItem);
+        });
+
+        confirm.setOnAction(actionEvent -> {
+            String newName = file.getParentFile().getAbsolutePath() + '/' + textField.getText() + '.' + suffix;
+            renameOneImg(file, newName, selectedItem);
+        });
+
+        cancel.setOnAction(actionEvent -> {
+            selectedItem.unselected(items.get(0));
+            stage.close();
+        });
+    }
+
+    /**
+     * 重命单张图片
+     */
+    private void renameOneImg(File file, String name, SelectedItem selectedItem) {
         File newNameFile = new File(name);
         if (!file.renameTo(newNameFile)) {
             stage.setAlwaysOnTop(false);
             if (AlertView.showAlert(AlertView.AlertType.RenameError)) {
                 stage.close();
-                renameImg(selectedItem);
+                renameImg();
             }
         } else {
             stage.close();
@@ -422,9 +455,8 @@ public class FunctionMenu {
     /**
      * 复制图片
      *
-     * @param selectedItem 被选中的图片缩略图集
      */
-    private void copyImg(SelectedItem selectedItem) {
+    private void copyImg() {
         //得到系统剪切板
         Clipboard clipboard = Clipboard.getSystemClipboard();
         List<File> files = selectedItem.copy();
