@@ -140,14 +140,15 @@ public class FunctionMenu {
                 String rename;
                 if (fileName.lastIndexOf('-') == -1) {
                     rename = fileName.substring(0, fileName.lastIndexOf('.'));
-                    fileName = rename + " - 副本(" + index + ")" + suffix;
+                    fileName = rename + " - 副本" + suffix;
                     while (newDirImgFileNames.contains(fileName)) {
                         index++;
                         fileName = rename + " - 副本(" + index + ")" + suffix;
                     }
                 } else {
-                    //TODO: logical
-                    index = Integer.parseInt(fileName.substring(fileName.lastIndexOf('(') + 1, fileName.lastIndexOf(')')));
+                    if(fileName.lastIndexOf('(') != -1 && fileName.lastIndexOf(')') != -1) {
+                        index = Integer.parseInt(fileName.substring(fileName.lastIndexOf('(') + 1, fileName.lastIndexOf(')')));
+                    }
                     rename = fileName.substring(0, fileName.lastIndexOf('-') - 1);
                     index++;
                     fileName = rename + " - 副本(" + index + ")" + suffix;
@@ -184,7 +185,6 @@ public class FunctionMenu {
 
     /**
      * 图片重命名
-     *
      */
     private void renameImg() {
         ArrayList<DisplayItem> items = selectedItem.getItems();
@@ -256,10 +256,11 @@ public class FunctionMenu {
 
     /**
      * 多图片重命名确认按钮的点击事件设置
-     * @param confirm 确认按钮
-     * @param nameField 重命名名字
+     *
+     * @param confirm      确认按钮
+     * @param nameField    重命名名字
      * @param startIdField 起始编号
-     * @param digitField 编号位数
+     * @param digitField   编号位数
      */
     private void setMulReConfirmAction(Button confirm, TextField nameField, TextField startIdField, TextField digitField) {
         ArrayList<DisplayItem> items = selectedItem.getItems();
@@ -454,7 +455,6 @@ public class FunctionMenu {
 
     /**
      * 复制图片
-     *
      */
     private void copyImg() {
         //得到系统剪切板
