@@ -282,15 +282,20 @@ public class FunctionMenu {
                 File file = new File(path);
                 File parentFile = file.getParentFile();
                 //得到当前FlowPane中所展示的所有图片文件
-                files = parentFile.listFiles();
+                files = parentFile.listFiles(pathname -> {
+                    String suffix = pathname.getName().substring(pathname.getName().lastIndexOf('.') + 1);
+                    return "png".equalsIgnoreCase(suffix) || "jpg".equalsIgnoreCase(suffix) || "jpeg".equalsIgnoreCase(suffix)
+                            || "gif".equalsIgnoreCase(suffix) || "bmp".equalsIgnoreCase(suffix);
+                });
 
                 //先得到所有的新重命名的名字
                 for (int i = 0; i < items.size(); i++) {
                     DisplayItem item = items.get(i);
+                    //得到各种图片类型的路径
                     path = item.getPicture().getImage().getUrl().substring(5);
+                    //得到各种图片类型的后缀
                     String suffix = path.substring(path.lastIndexOf(".") + 1);
                     String newName = String.format(name + "%0" + digit + "d" + "." + suffix, startIdInt++);
-
                     newNames.add(newName);
                 }
                 //判断在被选中图片外是否存在有与重命名名字相同名字的图片文件
@@ -393,12 +398,12 @@ public class FunctionMenu {
         textField.setOnAction(actionEvent ->
         {
             String newName = file.getParentFile().getAbsolutePath() + '/' + textField.getText() + '.' + suffix;
-            renameOneImg(file, newName, selectedItem);
+            renameOneImg(file, newName);
         });
 
         confirm.setOnAction(actionEvent -> {
             String newName = file.getParentFile().getAbsolutePath() + '/' + textField.getText() + '.' + suffix;
-            renameOneImg(file, newName, selectedItem);
+            renameOneImg(file, newName);
         });
 
         cancel.setOnAction(actionEvent -> {
@@ -410,7 +415,7 @@ public class FunctionMenu {
     /**
      * 重命单张图片
      */
-    private void renameOneImg(File file, String name, SelectedItem selectedItem) {
+    private void renameOneImg(File file, String name) {
         File newNameFile = new File(name);
         if (!file.renameTo(newNameFile)) {
             stage.setAlwaysOnTop(false);
