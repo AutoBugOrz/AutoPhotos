@@ -75,11 +75,13 @@ public class PictureDisplayBar {
 
         scrollPane.setOnMouseClicked(mouseEvent -> {
             //对发生在scrollPane上右键事件是否触发右键菜单功能进行逻辑判断
-            if (mouseEvent.getButton() == MouseButton.SECONDARY && mouseEvent.getClickCount() == 1) {
+            if (mouseEvent.getButton() == MouseButton.SECONDARY && (mouseEvent.getClickCount() == 1 || mouseEvent.getClickCount() == 2)) {
                 if (FunctionMenu.getContextMenu().isShowing()) {
                     FunctionMenu.getContextMenu().hide();
+                    selectedItem.showSelected();
                 } else {
                     if (selectedItem.getItems().size() > 0){
+                        selectedItem.showSelected();
                         FunctionMenu.getContextMenu().show(scrollPane, mouseEvent.getScreenX(), mouseEvent.getScreenY());
                     }
                 }
@@ -133,11 +135,7 @@ public class PictureDisplayBar {
                         refreshBIBar();
                     }
                     if (!isInner(x, y) && clickBlank && selectedItem.getItems().size() > 1) {
-                        ArrayList<DisplayItem> items = selectedItem.getItems();
-                        for (int i = 0; i < items.size(); i++) {
-                            items.get(i).setSelected(false);
-                        }
-                        selectedItem.removeUnselected();
+                        selectedItem.clear();
                         refreshBIBar();
                     }
                 }

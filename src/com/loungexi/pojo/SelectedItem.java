@@ -44,6 +44,7 @@ public class SelectedItem {
     public void clear() {
         for (int i = 0; i < items.size(); i++) {
             if(items.get(i).isSelected()){
+                items.get(i).setStyle("-fx-background-color: #ffffff");
                 items.get(i).setSelected(false);
             }
         }
@@ -80,5 +81,11 @@ public class SelectedItem {
             files.add(file);
         }
         return files;
+    }
+
+    public void showSelected(){
+        for (DisplayItem item : items) {
+            item.setStyle("-fx-background-color: rgb(202, 202, 202);" + "-fx-border-insets: 1;" + "-fx-border-color: rgb(163, 163, 163)");
+        }
     }
 }

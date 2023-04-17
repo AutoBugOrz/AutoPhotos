@@ -92,17 +92,7 @@ public class DisplayItem extends VBox{
                 this.setStyle("-fx-background-color: rgb(202, 202, 202);" + "-fx-border-insets: 1;" + "-fx-border-color: rgb(163, 163, 163)");
                 new DetailItem(picture);
                 new BottomInfoBar(1);
-                SelectedItem selectedItem = PictureDisplayBar.getSelectedItem();
-                selectedItem.select(this);
-                ArrayList<DisplayItem> items = selectedItem.getItems();
-                if(items.size() > 1){
-                    for (DisplayItem item : items) {
-                        if(!this.equals(item)){
-                            item.setSelected(false);
-                        }
-                    }
-                    selectedItem.removeUnselected();
-                }
+                mouseClickSelected();
             }
 
             // 鼠标左键 双击事件 创建一个舞台展示图片的详细信息
@@ -112,10 +102,29 @@ public class DisplayItem extends VBox{
 
             // 鼠标右键 展开功能条目
             if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                PictureDisplayBar.getSelectedItem().select(this);
+                if(!this.isSelected()){
+                    mouseClickSelected();
+                }
                 PictureDisplayBar.refreshBIBar();
             }
         });
+    }
+
+    /**
+     * 鼠标点击事件发生时，对于图片是否被选择的处理方法
+     */
+    private void mouseClickSelected(){
+        SelectedItem selectedItem = PictureDisplayBar.getSelectedItem();
+        selectedItem.select(this);
+        ArrayList<DisplayItem> items = selectedItem.getItems();
+        if(items.size() > 1){
+            for (DisplayItem item : items) {
+                if(!this.equals(item)){
+                    item.setSelected(false);
+                }
+            }
+            selectedItem.removeUnselected();
+        }
     }
 
     public boolean isSelected() {

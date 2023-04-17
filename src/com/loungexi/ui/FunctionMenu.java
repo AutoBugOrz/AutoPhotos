@@ -167,11 +167,11 @@ public class FunctionMenu {
     /**
      * 将粘贴文件写入到粘贴目录中，表现为粘贴成功
      *
-     * @param srcfile 粘贴文件
+     * @param srcFile 粘贴文件
      * @param newFile 粘贴目录下新文件
      */
-    private void writeFile(File srcfile, File newFile) {
-        try (FileInputStream is = new FileInputStream(srcfile);
+    private void writeFile(File srcFile, File newFile) {
+        try (FileInputStream is = new FileInputStream(srcFile);
              FileOutputStream os = new FileOutputStream(newFile)) {
             byte[] buffer = new byte[1024];
             int length;
@@ -201,7 +201,6 @@ public class FunctionMenu {
      * 多图片的重命名
      */
     private void multipleImgRename() {
-        ArrayList<DisplayItem> items = selectedItem.getItems();
         //多图片的重命名
         GridPane gridPane = new GridPane();
         Label nameLabel = new Label("图片名:");
@@ -298,6 +297,7 @@ public class FunctionMenu {
                     String newName = String.format(name + "%0" + digit + "d" + "." + suffix, startIdInt++);
                     newNames.add(newName);
                 }
+
                 //判断在被选中图片外是否存在有与重命名名字相同名字的图片文件
                 if (isExistSameNameFile(files, items, newNames)) {
                     stage.setAlwaysOnTop(false);
@@ -322,24 +322,23 @@ public class FunctionMenu {
                         path = item.getPicture().getImage().getUrl().substring(5);
                         file = new File(path);
 
-                        fileList.add(file);
-
-                        for (int j = 0; j < newNames.size(); j++) {
-                            if (file.getName().equals(newNames.get(j))) {
-                                fileList.remove(file);
-                                newNames.remove(newNames.get(j));
-                            }
+                        if(!newNames.contains(file.getName())){
+                            fileList.add(file);
+                        }else{
+                            newNames.remove(file.getName());
                         }
-                        item.setSelected(false);
                     }
                     /**
                      * 将不发生重名冲突的被选择图片文件进行重命名
                      */
-                    for (int i = 0; i < fileList.size(); i++) {
-                        file = fileList.get(i);
-                        File newNameFile = new File(file.getParentFile().getAbsolutePath() + '/' + newNames.get(0));
-                        newNames.remove(0);
-                        file.renameTo(newNameFile);
+                    if(fileList.size() != 0){
+                        for (int i = 0; i < fileList.size(); i++) {
+                            file = fileList.get(i);
+                            File newNameFile = new File(file.getParentFile().getAbsolutePath() + '/' + newNames.get(i));
+                            System.out.println("old-file-name="+file.getName()+" new-file-name="+newNameFile.getName());
+                            file.renameTo(newNameFile);
+                        }
+                        System.out.println("--------------------------------");
                     }
                     stage.close();
                     refresh();
@@ -432,26 +431,26 @@ public class FunctionMenu {
     /**
      * 判断除被选中的图片外，是否存在相同名字文件
      *
-     * @param files    当前目录下的所有文件
+     * @param files    当前目录下的所有图片文件
      * @param items    选中的图片集
      * @param newNames 预重命名的名字数列
      * @return 若在被选中图片外还存在与预命名的名字相同的文件，返回true,否则返回false
      */
     private boolean isExistSameNameFile(File[] files, ArrayList<DisplayItem> items, ArrayList<String> newNames) {
         boolean exists = false;
-        for (int i = 0; i < newNames.size(); i++) {
-            String newName = newNames.get(i);
+        if(files.length != items.size()){
             l:
             for (File file : files) {
-                if (file.getName().equals(newName)) {
+                if(newNames.contains(file.getName())){
                     for (DisplayItem item : items) {
                         String path = item.getPicture().getImage().getUrl().substring(5);
                         File f = new File(path);
                         if (file.equals(f)) {
+                            System.out.println(file.getName());
                             break l;
                         }
+                        exists = true;
                     }
-                    exists = true;
                 }
             }
         }
