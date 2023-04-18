@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 
@@ -40,6 +41,7 @@ public class BaseView {
         stage.show();
 
         PictureDisplayBar.pane.setMinHeight(borderPane.getCenter().getScene().getHeight());
+//        PictureDisplayBar.DISPLAY_FLOW_PANE.setLayoutY(100);
     }
 
 }

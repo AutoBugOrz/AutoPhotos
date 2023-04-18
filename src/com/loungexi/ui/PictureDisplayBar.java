@@ -9,15 +9,10 @@ import javafx.geometry.Insets;
 
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.input.Clipboard;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -25,6 +20,8 @@ import java.util.List;
  */
 public class PictureDisplayBar {
     // TODO 静态变量整体修改
+    private MainPageTopBar mainPageTopBar = new MainPageTopBar();
+    private VBox pictureDisplayVbox = new VBox();
     public static final FlowPane DISPLAY_FLOW_PANE = new FlowPane();
     public static BorderPane DISPLAY_BORDER;
     public static final ScrollPane scrollPane = new ScrollPane();
@@ -47,7 +44,7 @@ public class PictureDisplayBar {
     /**
      * 框选前，滚动条的初始位置
      */
-    private static double startVvalue;
+    private static double startValue;
     private double bottomHeight;
 
 
@@ -60,10 +57,22 @@ public class PictureDisplayBar {
 
     public void initBackground() {
         initRectangle();
+        setMainPageTopBar();
         selectedItem.clear();
         setFlowPane();
         setScrollPane();
-        DISPLAY_BORDER.setCenter(scrollPane);
+        DISPLAY_BORDER.setCenter(pictureDisplayVbox);
+    }
+
+    private void setMainPageTopBar() {
+        pictureDisplayVbox.getChildren().addAll(mainPageTopBar, scrollPane);
+        //将vbox的高度绑定到borderpane上
+        pictureDisplayVbox.prefHeightProperty().bind(DISPLAY_BORDER.heightProperty());
+        //将scrollPane的高度绑定到vbox上
+        scrollPane.prefHeightProperty().bind(pictureDisplayVbox.heightProperty());
+        //将mainPageTopBar的宽度绑定到vbox的宽上
+        mainPageTopBar.prefWidthProperty().bind(pictureDisplayVbox.widthProperty());
+        pictureDisplayVbox.setVisible(false);
     }
 
     private void setScrollPane() {
@@ -80,7 +89,7 @@ public class PictureDisplayBar {
                     FunctionMenu.getContextMenu().hide();
                     selectedItem.showSelected();
                 } else {
-                    if (selectedItem.getItems().size() > 0){
+                    if (selectedItem.getItems().size() > 0) {
                         selectedItem.showSelected();
                         FunctionMenu.getContextMenu().show(scrollPane, mouseEvent.getScreenX(), mouseEvent.getScreenY());
                     }
@@ -111,7 +120,7 @@ public class PictureDisplayBar {
         DISPLAY_FLOW_PANE.setOnMousePressed(mouseEvent -> {
             mouseStart = new Point(mouseEvent.getX(), mouseEvent.getY());
             if (mouseEvent.isPrimaryButtonDown() && DISPLAY_FLOW_PANE.getChildren().size() > 0) {
-                startVvalue = scrollPane.getVvalue();
+                startValue = scrollPane.getVvalue();
 
                 ObservableList<Node> children = DISPLAY_FLOW_PANE.getChildren();
                 DisplayItem item = (DisplayItem) children.get(children.size() - 1);
@@ -123,7 +132,7 @@ public class PictureDisplayBar {
             double x = mouseEvent.getX();
             double y = mouseEvent.getY();
 
-            if(DISPLAY_FLOW_PANE.getChildren().size() > 0) {
+            if (DISPLAY_FLOW_PANE.getChildren().size() > 0) {
                 /**
                  * 若左键单击事件发生在非图片区域上，则取消选中FlowPane上的所有被选中图片
                  * releaseDrag判断是否为普通单击事件，还是框选操作后释放触发的单击事件
@@ -152,20 +161,20 @@ public class PictureDisplayBar {
                 Point mouseStart_t = new Point(Math.min(mouseDragged.getX(), mouseStart.getX()), Math.min(mouseDragged.getY(), mouseStart.getY()));
                 mouseDragged = t;
 
-               if(mouseEvent.getX() > scrollPane.getWidth()){
-                   double x = scrollPane.getWidth();
-                   double y = mouseDragged.getY();
-                   mouseDragged = new Point(x, y);
-               }
-                if(mouseEvent.getY() > bottomHeight){
+                if (mouseEvent.getX() > scrollPane.getWidth()) {
+                    double x = scrollPane.getWidth();
+                    double y = mouseDragged.getY();
+                    mouseDragged = new Point(x, y);
+                }
+                if (mouseEvent.getY() > bottomHeight) {
                     double x = mouseDragged.getX();
                     double y = bottomHeight;
                     mouseDragged = new Point(x, y);
                 }
 
-               //滚动条位置跟随
+                //滚动条位置跟随
                 double moveY = mouseStart.getY() - mouseEvent.getY();
-                scrollPane.setVvalue(startVvalue - (moveY / (DISPLAY_FLOW_PANE.getHeight() - scrollPane.getHeight())) / 3);
+                scrollPane.setVvalue(startValue - (moveY / (DISPLAY_FLOW_PANE.getHeight() - scrollPane.getHeight())) / 3);
 
                 //判断矩形是否框选中图片
                 for (int i = 0; i < DISPLAY_FLOW_PANE.getChildren().size(); i++) {
@@ -253,11 +262,11 @@ public class PictureDisplayBar {
      */
     private void initRectangle() {
         rectangle.setVisible(false);
+//        pane.getChildren().addAll(DISPLAY_FLOW_PANE, rectangle, new MainPageTopBar());
         pane.getChildren().addAll(DISPLAY_FLOW_PANE, rectangle);
     }
 
     /**
-     *
      * @param start 矩形左上角点
      * @param end   矩形右上角点
      */
