@@ -20,8 +20,18 @@ import javafx.scene.shape.Rectangle;
  */
 public class PictureDisplayBar {
     // TODO 静态变量整体修改
-    private MainPageTopBar mainPageTopBar = new MainPageTopBar();
-    private VBox pictureDisplayVbox = new VBox();
+    private final MainPageTopBar MAIN_PAGE_TOP_BAR = new MainPageTopBar();
+
+    public MainPageTopBar getMainPageTopBar() {
+        return MAIN_PAGE_TOP_BAR;
+    }
+
+    private static final VBox PICTURE_DISPLAY_VBOX = new VBox();
+
+    public static VBox getPictureDisplayVbox() {
+        return PICTURE_DISPLAY_VBOX;
+    }
+
     public static final FlowPane DISPLAY_FLOW_PANE = new FlowPane();
     public static BorderPane DISPLAY_BORDER;
     public static final ScrollPane scrollPane = new ScrollPane();
@@ -61,18 +71,24 @@ public class PictureDisplayBar {
         selectedItem.clear();
         setFlowPane();
         setScrollPane();
-        DISPLAY_BORDER.setCenter(pictureDisplayVbox);
+        DISPLAY_BORDER.setCenter(PICTURE_DISPLAY_VBOX);
     }
 
+    /**
+     * @description: 设置MainPageTopBar的各种绑定
+     * @param: null
+     * @return: void
+     * @author Lantech
+     */
     private void setMainPageTopBar() {
-        pictureDisplayVbox.getChildren().addAll(mainPageTopBar, scrollPane);
+        PICTURE_DISPLAY_VBOX.getChildren().addAll(MAIN_PAGE_TOP_BAR, scrollPane);
         //将vbox的高度绑定到borderpane上
-        pictureDisplayVbox.prefHeightProperty().bind(DISPLAY_BORDER.heightProperty());
+        PICTURE_DISPLAY_VBOX.prefHeightProperty().bind(DISPLAY_BORDER.heightProperty());
         //将scrollPane的高度绑定到vbox上
-        scrollPane.prefHeightProperty().bind(pictureDisplayVbox.heightProperty());
+        scrollPane.prefHeightProperty().bind(PICTURE_DISPLAY_VBOX.heightProperty());
         //将mainPageTopBar的宽度绑定到vbox的宽上
-        mainPageTopBar.prefWidthProperty().bind(pictureDisplayVbox.widthProperty());
-        pictureDisplayVbox.setVisible(false);
+        MAIN_PAGE_TOP_BAR.prefWidthProperty().bind(PICTURE_DISPLAY_VBOX.widthProperty());
+        PICTURE_DISPLAY_VBOX.setVisible(false);
     }
 
     private void setScrollPane() {

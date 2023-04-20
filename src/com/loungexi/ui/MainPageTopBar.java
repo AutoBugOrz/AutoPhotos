@@ -1,6 +1,7 @@
 package com.loungexi.ui;
 
 import com.loungexi.pojo.DisplayItem;
+import com.loungexi.pojo.Picture;
 import com.loungexi.utils.Pictures;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -14,14 +15,36 @@ import java.util.*;
  * @description: 主界面中间用来展示图片上面的排序栏的HBox
  */
 public class MainPageTopBar extends HBox {
+    //默认文本
+    private static final String SORT_BY_NAME_TEXT = "名称    ";
     //按图片名称排序的btn
-    private static final Button SORT_BY_NAME = new Button("名称    ");
+    private static final Button SORT_BY_NAME = new Button(SORT_BY_NAME_TEXT);
+    //默认文本
+    private static final String SORT_BY_LAST_MODIFIED_TEXT = "修改日期     ";
     //按修改日期排序的btn
-    private static final Button SORT_BY_LAST_MODIFIED = new Button("修改日期     ");
+    private static final Button SORT_BY_LAST_MODIFIED = new Button(SORT_BY_LAST_MODIFIED_TEXT);
+    //默认文本
+    private static final String SORT_BY_TYPE_TEXT = "类型    ";
     //按图片类型排序的btn
-    private static final Button SORT_BY_TYPE = new Button("类型    ");
+    private static final Button SORT_BY_TYPE = new Button(SORT_BY_TYPE_TEXT);
+    //默认文本
+    private static final String SORT_BY_SIZE_TEXT = "大小    ";
     //按图片大小排序的btn
-    private static final Button SORT_BY_SIZE = new Button("大小    ");
+    private static final Button SORT_BY_SIZE = new Button(SORT_BY_SIZE_TEXT);
+    //btn对应的默认文本
+    private static final Map<Button, String> BTN_INIT_TEXTS = new HashMap<>();
+
+    static {
+        BTN_INIT_TEXTS.put(SORT_BY_NAME, SORT_BY_NAME_TEXT);
+        BTN_INIT_TEXTS.put(SORT_BY_LAST_MODIFIED, SORT_BY_LAST_MODIFIED_TEXT);
+        BTN_INIT_TEXTS.put(SORT_BY_TYPE, SORT_BY_TYPE_TEXT);
+        BTN_INIT_TEXTS.put(SORT_BY_SIZE, SORT_BY_SIZE_TEXT);
+    }
+
+    public static Map<Button, String> getBtnInitTexts() {
+        return BTN_INIT_TEXTS;
+    }
+
     //用来记录当前是否降序排序，默认降序
     private static boolean isDesc = true;
     //用来记录当前按什么排序，默认按修改时间
@@ -68,6 +91,12 @@ public class MainPageTopBar extends HBox {
         setSizeOnAction();
     }
 
+    /**
+     * @description: 设置所有btn的默认属性等值
+     * @param: null
+     * @return: void
+     * @author Lantech
+     */
     private void setButtons() {
         //文字居中显示
         SORT_BY_NAME.setStyle("-fx-alignment: center");
@@ -91,13 +120,14 @@ public class MainPageTopBar extends HBox {
         HBox.setHgrow(SORT_BY_TYPE, Priority.ALWAYS);
         HBox.setHgrow(SORT_BY_SIZE, Priority.ALWAYS);
     }
+
     /**
      * @description: 设置默认排序
      * @param: null
      * @return: void
      * @author Lantech
      */
-    private void setDefaultSort() {
+    public void setDefaultSort() {
         //先获得首页展示的各个VBox
         ArrayList<DisplayItem> displayItems = getDisplayItems();
         //按修改时间降序
@@ -120,6 +150,8 @@ public class MainPageTopBar extends HBox {
             //先获得首页展示的各个VBox
             ArrayList<DisplayItem> displayItems = getDisplayItems();
             if (sortField != sortFields.SIZE) {
+                //不是当前btn的话初始化其他btns为默认值
+                initOtherBtns(SORT_BY_SIZE);
                 //不是当前排序的话，排序默认为降序
                 isDesc = true;
                 //排序类型改为当前排序类型
@@ -152,6 +184,8 @@ public class MainPageTopBar extends HBox {
             //先获得首页展示的各个VBox
             ArrayList<DisplayItem> displayItems = getDisplayItems();
             if (sortField != sortFields.NAME) {
+                //不是当前btn的话初始化其他btns为默认值
+                initOtherBtns(SORT_BY_NAME);
                 //不是当前排序的话，排序默认为降序
                 isDesc = true;
                 //排序类型改为当前排序类型
@@ -184,6 +218,8 @@ public class MainPageTopBar extends HBox {
             //先获得首页展示的各个VBox
             ArrayList<DisplayItem> displayItems = getDisplayItems();
             if (sortField != sortFields.TYPE) {
+                //不是当前btn的话初始化其他btns为默认值
+                initOtherBtns(SORT_BY_TYPE);
                 //不是当前排序的话，排序默认为降序
                 isDesc = true;
                 //排序类型改为当前排序类型
@@ -217,6 +253,8 @@ public class MainPageTopBar extends HBox {
             //先获得首页展示的各个VBox
             ArrayList<DisplayItem> displayItems = getDisplayItems();
             if (sortField != sortFields.LAST_MODIFIED) {
+                //不是当前btn的话初始化其他btns为默认值
+                initOtherBtns(SORT_BY_LAST_MODIFIED);
                 //不是当前排序的话，排序默认为降序
                 isDesc = true;
                 //排序类型改为当前排序类型
@@ -229,7 +267,7 @@ public class MainPageTopBar extends HBox {
                 SORT_BY_LAST_MODIFIED.setText("修改日期    ↓");
             } else {
                 //如果是升序，就升序
-                displayItems.sort(Comparator.comparing(o -> o.getPicture().getImageName()));
+                displayItems.sort(Comparator.comparing(o -> Pictures.lastModifiedOf(o.getPicture())));
                 SORT_BY_LAST_MODIFIED.setText("修改日期    ↑");
             }
             setDisplayItems(displayItems);
@@ -264,11 +302,21 @@ public class MainPageTopBar extends HBox {
         PictureDisplayBar.DISPLAY_FLOW_PANE.getChildren().addAll(displayItems);
     }
 
-    public static void setDefault() {
-        SORT_BY_NAME.setText("名称    ");
-        SORT_BY_LAST_MODIFIED.setText("修改日期     ");
-        SORT_BY_TYPE.setText("类型    ");
-        SORT_BY_SIZE.setText("大小    ");
-
+    /**
+     * @description: 将除本btn外的btns的text设置为对应的默认text
+     * @param: nowBtn
+     * @return: void
+     * @author Lantech
+     */
+    private void initOtherBtns(Button nowBtn) {
+        for (Node node : this.getChildren()) {
+            Button btn = (Button) node;
+            if (!btn.equals(nowBtn)) {
+                System.out.println(btn.getText());
+                btn.setText(BTN_INIT_TEXTS.get(btn));
+                System.out.println(btn.getText());
+            }
+        }
     }
+
 }

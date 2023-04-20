@@ -1,11 +1,16 @@
 package com.loungexi.controller;
 
+import com.loungexi.run.Main;
 import com.loungexi.ui.BottomInfoBar;
+import com.loungexi.ui.MainPageTopBar;
 import com.loungexi.ui.PictureDetailBar;
 import com.loungexi.ui.PictureDisplayBar;
+import com.loungexi.utils.MainPageTopBars;
+import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 
 import java.io.File;
 
@@ -26,6 +31,10 @@ public class TreeViewController {
     private void treeItemEventsListener(BorderPane borderPane, TreeView<File> treeView) {
         treeView.getSelectionModel().selectedItemProperty().addListener((observableValue, fileTreeItem, newValue) -> {
             borderPane.getCenter().setVisible(true);
+            //点击目录树的item重新初始化排序栏
+            VBox center = (VBox)borderPane.getCenter();
+            MainPageTopBar node = (MainPageTopBar)center.getChildren().get(0);
+            MainPageTopBars.setDefault(node);
             if (newValue != null) {
                 addItems(newValue, 0);
                 //在这里底部信息栏优化应该将静态面板在BaseView中new出来然后将数据分装成一个对象实时更新到静态面板上，这样的做法才是正确且快速的.
