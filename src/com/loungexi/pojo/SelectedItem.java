@@ -18,8 +18,11 @@ public class SelectedItem {
 
     /**
      *
-     * @param item 选中的图片缩略图
-     */
+     * @description 将图片缩略图置为未被选中状态
+     * @author Paul
+     * @date 23:48 2023/4/20
+     * @param item  选中的图片缩略图
+     **/
     public void unselected(DisplayItem item) {
         item.setStyle("-fx-background-color: #ffffff");
         item.setSelected(false);
@@ -27,9 +30,12 @@ public class SelectedItem {
     }
 
     /**
-     * 选中图片，并将其加入到items
-     * @param item 选中的图片缩略图
-     */
+     *
+     * @description 选中图片，并将其加入到items
+     * @author Paul
+     * @date 23:50 2023/4/20
+     * @param item  选中的图片缩略图
+     **/
     public void select(DisplayItem item) {
         item.setStyle("-fx-background-color: rgb(202, 202, 202);" + "-fx-border-insets: 1;" + "-fx-border-color: rgb(163, 163, 163)");
         item.setSelected(true);
@@ -39,8 +45,11 @@ public class SelectedItem {
     }
 
     /**
-     *  清除选中的图片，此方法在刷新/加载FlowPane时调用
-     */
+     *
+     * @description 清除选中的图片，此方法在刷新/加载FlowPane时调用
+     * @author Paul
+     * @date 23:50 2023/4/20
+     **/
     public void clear() {
         for (int i = 0; i < items.size(); i++) {
             if(items.get(i).isSelected()){
@@ -52,9 +61,11 @@ public class SelectedItem {
     }
 
     /**
-     * 移除items中处于未被选中状态的图片缩略图
-     * 效果为图片由选中变为未选中
-     */
+     *
+     * @description 移除items中处于未被选中状态的图片缩略图，效果为图片由选中变为未选中
+     * @author Paul
+     * @date 23:50 2023/4/20
+     **/
     public void removeUnselected() {
         for (int i = 0; i < items.size(); i++) {
             if(!items.get(i).isSelected()){
@@ -65,14 +76,24 @@ public class SelectedItem {
         }
     }
 
+    /**
+     *
+     * @description 得到存放所有被选中图片缩略图数列的方法
+     * @author Paul
+     * @date 23:51 2023/4/20
+     * @return java.util.ArrayList<com.loungexi.pojo.DisplayItem>
+     **/
     public ArrayList<DisplayItem> getItems() {
         return items;
     }
 
     /**
-     * 将选中的图片存放到File数列中传出，交给剪切板
-     * @return 选中的图片的File数列
-     */
+     *
+     * @description 将选中的图片存放到File数列中传出，交给剪切板
+     * @author Paul
+     * @date 23:54 2023/4/20
+     * @return java.util.List<java.io.File> 选中的图片的File数列
+     **/
     public List<File> copy(){
         List<File> files = new ArrayList<>();
         for (int i = 0; i < items.size(); i++) {
@@ -83,6 +104,12 @@ public class SelectedItem {
         return files;
     }
 
+    /**
+     *
+     * @description 将在选中数列中的所有图片置为选中状态（表现为图片被选中）
+     * @author Paul
+     * @date 23:53 2023/4/20
+     **/
     public void showSelected(){
         for (DisplayItem item : items) {
             item.setStyle("-fx-background-color: rgb(202, 202, 202);" + "-fx-border-insets: 1;" + "-fx-border-color: rgb(163, 163, 163)");
