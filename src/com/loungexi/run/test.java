@@ -1,6 +1,5 @@
 package com.loungexi.run;
 
-import org.junit.Test;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;

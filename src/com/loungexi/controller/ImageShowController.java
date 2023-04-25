@@ -4,13 +4,19 @@ import com.loungexi.pojo.AsyncPlayer;
 import com.loungexi.pojo.LargeImageShowItem;
 import com.loungexi.pojo.Picture;
 import com.loungexi.ui.ImageShowBar;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,9 +31,9 @@ public class ImageShowController {
     private Integer fitHeightNumber = 600;
     private Integer nowImageCount;
 
-    public ImageShowController(Button counterClockWiseButton, Button clockWiseButton, Button enlargeButton, Button shrinkButton, Button previousButton, Button nextButton, Button autoPlayButton, Picture picture) {
+    public ImageShowController(Button counterClockWiseButton, Button clockWiseButton, Button enlargeButton, Button shrinkButton, Button previousButton, Button nextButton, Button autoPlayButton, Button editImageButton, Picture picture) {
         initFiles(picture);
-        addButtonController(counterClockWiseButton, clockWiseButton, enlargeButton, shrinkButton, previousButton, nextButton, autoPlayButton);
+        addButtonController(counterClockWiseButton, clockWiseButton, enlargeButton, shrinkButton, previousButton, nextButton, autoPlayButton, editImageButton);
     }
 
     /**
@@ -35,7 +41,38 @@ public class ImageShowController {
      * @param: [counterClockWiseButton, clockWiseButton, enlargeButton, shrinkButton, previousButton, nextButton, autoPlayButton]
      * @return: 添加按钮的点击事件，实现各个按钮的功能 幻灯片功能使用时点击其他按钮会终止幻灯片功能
      **/
-    private void addButtonController(Button counterClockWiseButton, Button clockWiseButton, Button enlargeButton, Button shrinkButton, Button previousButton, Button nextButton, Button autoPlayButton) {
+    private void addButtonController(Button counterClockWiseButton, Button clockWiseButton, Button enlargeButton, Button shrinkButton, Button previousButton, Button nextButton, Button autoPlayButton, Button editImageButton) {
+        editImageButton.setOnAction(event -> {
+            // TODO: 2023/4/26  还要加个禁止对其他窗口进行操作的代码，还要动态获取image
+            Stage primaryStage = new Stage();
+            //加载fxml
+            FXMLLoader loader = new FXMLLoader();
+//            loader.setLocation(getClass().getResource("EditPage.fxml"));
+            loader.setLocation(getClass().getResource("EditPage.fxml"));
+            Parent root = null;
+            try {
+                root = loader.load();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            //窗口大小根据屏幕自适应
+            Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
+            double screenWidth = visualBounds.getWidth();
+            double screenHeight = visualBounds.getHeight();
+            Scene scene = new Scene(root, screenWidth * 0.8, screenHeight * 0.8);
+            // TODO: 2023/4/24
+//        ImageView imageArea = (ImageView) root.lookup("#imageArea");
+//        imageArea.setImage(new Image("file:1.jpg"));
+            System.out.println("scene");
+            System.out.println(scene.getHeight());
+            System.out.println(scene.getWidth());
+            //窗口居中
+            primaryStage.setX((screenWidth - scene.getWidth()) / 2);
+            primaryStage.setY((screenHeight - scene.getHeight()) / 2);
+            primaryStage.setScene(scene);
+            primaryStage.setTitle("nice");
+            primaryStage.show();
+        });
 
         autoPlayButton.setOnAction(event -> {
             autoPlayImage(autoPlayButton);

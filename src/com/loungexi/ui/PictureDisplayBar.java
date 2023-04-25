@@ -5,6 +5,7 @@ import com.loungexi.pojo.Point;
 import com.loungexi.pojo.SelectedItem;
 import com.loungexi.utils.VBoxData;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 
 import javafx.scene.Node;
@@ -72,6 +73,7 @@ public class PictureDisplayBar {
         setFlowPane();
         setScrollPane();
         DISPLAY_BORDER.setCenter(PICTURE_DISPLAY_VBOX);
+
     }
 
     /**

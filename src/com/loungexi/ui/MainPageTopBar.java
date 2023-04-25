@@ -312,9 +312,7 @@ public class MainPageTopBar extends HBox {
         for (Node node : this.getChildren()) {
             Button btn = (Button) node;
             if (!btn.equals(nowBtn)) {
-                System.out.println(btn.getText());
                 btn.setText(BTN_INIT_TEXTS.get(btn));
-                System.out.println(btn.getText());
             }
         }
     }
