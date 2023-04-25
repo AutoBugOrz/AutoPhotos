@@ -38,9 +38,12 @@ public class BottomInfoBar {
     }
 
     /**
-     * 刷新BottomInfoBar中的选中图片数
+     *
+     * @description 刷新BottomInfoBar中的选中图片数
+     * @author Paul
+     * @date 23:43 2023/4/20
      * @param selected 被选择的图片数
-     */
+     **/
     public BottomInfoBar(int selected) {
         hBox = (HBox) MyBorderPane.getBorderPane().getBottom();
         ObservableList<Node> children = hBox.getChildren();

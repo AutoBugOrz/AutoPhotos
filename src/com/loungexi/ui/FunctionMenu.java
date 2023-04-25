@@ -37,6 +37,12 @@ public class FunctionMenu {
     private MenuItem paste;
     private SelectedItem selectedItem = PictureDisplayBar.getSelectedItem();
 
+    /**
+     *
+     * @description 右键菜单的初始化构造方法，为右键功能绑定相关方法
+     * @author Paul
+     * @date 22:55 2023/4/20
+     **/
     public FunctionMenu() {
         delete = new MenuItem("删除");
         copy = new MenuItem("复制");
@@ -56,8 +62,10 @@ public class FunctionMenu {
     }
 
     /**
-     * 图片粘贴
-     */
+    * @description: 图片粘贴
+    * @return: void
+    * @author Paul
+    */
     private void pasteImg() {
         String newDirPath = DisplayItemController.getNowTreeItem().getValue().getPath() + File.separator;
         Clipboard clipboard = Clipboard.getSystemClipboard();
@@ -71,10 +79,14 @@ public class FunctionMenu {
     }
 
     /**
+     *
+     * @description: 对复制的图片进行粘贴
+     * @author Pual
+     * @date 22:07 2023/4/20 
      * @param newDirPath 新的目录路径,最后存在File.separator
-     * @param files      要粘贴的图片文件集
+     * @param files 要粘贴的图片文件集
      * @param renameType 值为0时，表示粘贴目录与图片源目录相同; 值为1时,表示粘贴目录与图片源目录不相同
-     */
+     **/
     private void writePastedFile(String newDirPath, List<File> files, int renameType) {
         if (renameType == 0) {
             pasteRename(newDirPath, files);
@@ -99,11 +111,13 @@ public class FunctionMenu {
     }
 
     /**
-     * 得到粘贴目录下所有图片的名字
      *
+     * @description 得到粘贴目录下所有图片的名字
+     * @author Paul
+     * @date 22:29 2023/4/20
      * @param newDirImgFileNames 所有图片的名字数列
-     * @param dirPath            粘贴目录，最后存在File.separator（分隔符）
-     */
+     * @param dirPath  粘贴目录，最后存在File.separator（分隔符）
+     **/
     public void getDirFilesName(ArrayList<String> newDirImgFileNames, String dirPath) {
         String path = dirPath.substring(0, dirPath.length() - 1);
         File dirFile = new File(path);
@@ -119,11 +133,13 @@ public class FunctionMenu {
     }
 
     /**
-     * 粘贴目录下存在图片时，该方法可处理同名冲突，将发生同名冲突的粘贴文件自动重命名
      *
+     * @description 粘贴目录下存在图片时，该方法可处理同名冲突，将发生同名冲突的粘贴文件自动重命名
+     * @author Paul
+     * @date 22:30 2023/4/20
      * @param newDirPath 粘贴目录，最后存在File.separator（分隔符）
-     * @param files      要粘贴的图片文件集
-     */
+     * @param files  要粘贴的图片文件集
+     **/
     public void pasteRename(String newDirPath, List<File> files) {
         ArrayList<String> newDirImgFileNames = new ArrayList<>();
         String suffix;
@@ -165,11 +181,13 @@ public class FunctionMenu {
     }
 
     /**
-     * 将粘贴文件写入到粘贴目录中，表现为粘贴成功
      *
+     * @description 将粘贴文件写入到粘贴目录中，表现为粘贴成功
+     * @author Paul
+     * @date 22:30 2023/4/20
      * @param srcFile 粘贴文件
-     * @param newFile 粘贴目录下新文件
-     */
+     * @param newFile  粘贴目录下新文件
+     **/
     private void writeFile(File srcFile, File newFile) {
         try (FileInputStream is = new FileInputStream(srcFile);
              FileOutputStream os = new FileOutputStream(newFile)) {
@@ -184,8 +202,11 @@ public class FunctionMenu {
     }
 
     /**
-     * 图片重命名
-     */
+     *
+     * @description 图片重命名
+     * @author Paul
+     * @date 22:31 2023/4/20
+     **/
     private void renameImg() {
         ArrayList<DisplayItem> items = selectedItem.getItems();
 
@@ -198,8 +219,11 @@ public class FunctionMenu {
     }
 
     /**
-     * 多图片的重命名
-     */
+     *
+     * @description 多图片的重命名
+     * @author Paul
+     * @date 22:31 2023/4/20
+     **/
     private void multipleImgRename() {
         //多图片的重命名
         GridPane gridPane = new GridPane();
@@ -335,10 +359,8 @@ public class FunctionMenu {
                         for (int i = 0; i < fileList.size(); i++) {
                             file = fileList.get(i);
                             File newNameFile = new File(file.getParentFile().getAbsolutePath() + '/' + newNames.get(i));
-                            System.out.println("old-file-name="+file.getName()+" new-file-name="+newNameFile.getName());
                             file.renameTo(newNameFile);
                         }
-                        System.out.println("--------------------------------");
                     }
                     stage.close();
                     refresh();
@@ -357,8 +379,11 @@ public class FunctionMenu {
     }
 
     /**
-     * 单张图片的重名名方法
-     */
+     *
+     * @description 单张图片的重名名方法
+     * @author Paul
+     * @date 22:36 2023/4/20
+     **/
     private void oneImgRename() {
         ArrayList<DisplayItem> items = selectedItem.getItems();
         //得到图片文件的路径
@@ -412,8 +437,13 @@ public class FunctionMenu {
     }
 
     /**
-     * 重命单张图片
-     */
+     *
+     * @description 重命单张图片
+     * @author Paul
+     * @date 22:38 2023/4/20
+     * @param file 单张重命名的图片文件
+     * @param name 重命名的名字
+     **/
     private void renameOneImg(File file, String name) {
         File newNameFile = new File(name);
         if (!file.renameTo(newNameFile)) {
@@ -428,14 +458,17 @@ public class FunctionMenu {
         }
     }
 
+
     /**
-     * 判断除被选中的图片外，是否存在相同名字文件
      *
-     * @param files    当前目录下的所有图片文件
-     * @param items    选中的图片集
+     * @description 判断除被选中的图片外，是否存在相同名字文件
+     * @author Paul
+     * @date 22:52 2023/4/20
+     * @param files 当前目录下的所有图片文件
+     * @param items 选中的图片集
      * @param newNames 预重命名的名字数列
-     * @return 若在被选中图片外还存在与预命名的名字相同的文件，返回true,否则返回false
-     */
+     * @return boolean 若在被选中图片外还存在与预命名的名字相同的文件，返回true,否则返回false
+     **/
     private boolean isExistSameNameFile(File[] files, ArrayList<DisplayItem> items, ArrayList<String> newNames) {
         boolean exists = false;
         if(files.length != items.size()){
@@ -458,8 +491,11 @@ public class FunctionMenu {
     }
 
     /**
-     * 复制图片
-     */
+     *
+     * @description 复制图片
+     * @author Paul
+     * @date 22:53 2023/4/20
+     **/
     private void copyImg() {
         //得到系统剪切板
         Clipboard clipboard = Clipboard.getSystemClipboard();
@@ -471,8 +507,11 @@ public class FunctionMenu {
     }
 
     /**
-     * 删除图片
-     */
+     *
+     * @description 删除图片
+     * @author Paul
+     * @date 22:53 2023/4/20
+     **/
     private void deleteImg() {
         SelectedItem selectedItem = PictureDisplayBar.getSelectedItem();
         ArrayList<DisplayItem> items = selectedItem.getItems();
@@ -486,9 +525,11 @@ public class FunctionMenu {
     }
 
     /**
-     * 刷新FlowPane，BottomInfoBar
-     * 展示各操作完成后的FlowPane，BottomInfoBar
-     */
+     *
+     * @description 刷新FlowPane，BottomInfoBar, 展示各操作完成后的FlowPane，BottomInfoBar
+     * @author Paul
+     * @date 22:53 2023/4/20
+     **/
     private void refresh() {
         PictureDisplayBar.getSelectedItem().clear();
         PictureDisplayBar.DISPLAY_FLOW_PANE.getChildren().clear();
@@ -497,6 +538,13 @@ public class FunctionMenu {
         new BottomInfoBar();
     }
 
+    /**
+     *
+     * @description 返回右键菜单选项
+     * @author Paul
+     * @date 22:54 2023/4/20
+     * @return javafx.scene.control.ContextMenu
+     **/
     public static ContextMenu getContextMenu() {
         return contextMenu;
     }

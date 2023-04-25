@@ -21,6 +21,14 @@ public class AlertView {
         RenameError
     }
 
+    /**
+     *
+     * @description 根据不同的AlertType来展示不同的警告信息
+     * @author Paul
+     * @date 23:46 2023/4/20
+     * @param alertType
+     * @return boolean
+     **/
     public static boolean showAlert(AlertType alertType){
         Alert alert = null;
         switch (alertType){

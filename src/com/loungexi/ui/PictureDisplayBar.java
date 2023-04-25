@@ -98,8 +98,15 @@ public class PictureDisplayBar {
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setContent(pane);
+        //在scrollPane上创建右键功能菜单对象
         new FunctionMenu();
 
+        /**
+         *
+         * @description scrollPane的鼠标点击事件
+         * @author Paul
+         * @date 23:44 2023/4/20
+         **/
         scrollPane.setOnMouseClicked(mouseEvent -> {
             //对发生在scrollPane上右键事件是否触发右键菜单功能进行逻辑判断
             if (mouseEvent.getButton() == MouseButton.SECONDARY && (mouseEvent.getClickCount() == 1 || mouseEvent.getClickCount() == 2)) {
@@ -135,6 +142,12 @@ public class PictureDisplayBar {
         AnchorPane.setBottomAnchor(DISPLAY_FLOW_PANE, 0.0);
         AnchorPane.setRightAnchor(DISPLAY_FLOW_PANE, 0.0);
 
+        /**
+         *
+         * @description DISPLAY_FLOW_PANE鼠标按下，得到鼠标按下点的坐标，滚动条的起始值，图片展示区域的最下端的y坐标
+         * @author Paul
+         * @date 23:37 2023/4/20
+         **/
         DISPLAY_FLOW_PANE.setOnMousePressed(mouseEvent -> {
             mouseStart = new Point(mouseEvent.getX(), mouseEvent.getY());
             if (mouseEvent.isPrimaryButtonDown() && DISPLAY_FLOW_PANE.getChildren().size() > 0) {
@@ -146,6 +159,12 @@ public class PictureDisplayBar {
             }
         });
 
+        /**
+         *
+         * @description DISPLAY_FLOW_PANE的鼠标点击事件
+         * @author Paul
+         * @date 23:41 2023/4/20
+         **/
         DISPLAY_FLOW_PANE.setOnMouseClicked(mouseEvent -> {
             double x = mouseEvent.getX();
             double y = mouseEvent.getY();
@@ -171,6 +190,12 @@ public class PictureDisplayBar {
             }
         });
 
+        /**
+         *
+         * @description DISPLAY_FLOW_PANE的鼠标拉拽事件
+         * @author Paul
+         * @date 23:41 2023/4/20
+         **/
         DISPLAY_FLOW_PANE.setOnMouseDragged(mouseEvent -> {
             if (mouseEvent.isPrimaryButtonDown()) {
                 mouseDragged = new Point(mouseEvent.getX(), mouseEvent.getY());
@@ -216,6 +241,12 @@ public class PictureDisplayBar {
             refreshBIBar();
         });
 
+        /**
+         *
+         * @description DISPLAY_FLOW_PANE的鼠标释放事件
+         * @author Paul
+         * @date 23:42 2023/4/20
+         **/
         DISPLAY_FLOW_PANE.setOnMouseReleased(mouseEvent ->
         {
             //如果rectangle可见，说明此次释放事件的发生在多选操作完成的时候，将releaseDrag置为true
@@ -227,10 +258,13 @@ public class PictureDisplayBar {
     }
 
     /**
-     * 判断点击是否发生在图片所在区域
      *
-     * @author: Paul
-     * @return: 若点击发生在图片所在区域，返回true,否则返回false
+     * @description 判断点击是否发生在图片所在区域
+     * @author Paul
+     * @date 23:33 2023/4/20
+     * @param x 鼠标点击事件发生的x坐标
+     * @param y 鼠标点击事件发生的y坐标
+     * @return boolean 若点击发生在图片所在区域，返回true,否则返回false
      **/
     private boolean isInner(double x, double y) {
         int size = DISPLAY_FLOW_PANE.getChildren().size();
@@ -261,8 +295,11 @@ public class PictureDisplayBar {
     }
 
     /**
-     * 刷新选中图片数
-     */
+     *
+     * @description 刷新选中图片数
+     * @author Paul
+     * @date 23:35 2023/4/20
+     **/
     public static void refreshBIBar() {
         ObservableList<Node> children = DISPLAY_FLOW_PANE.getChildren();
         int selected = 0;
@@ -276,7 +313,8 @@ public class PictureDisplayBar {
     }
 
     /**
-     * 初始化选择框，框选时显示
+     * @description: 初始化选择框，框选时显示
+     * @author Paul
      */
     private void initRectangle() {
         rectangle.setVisible(false);
@@ -285,9 +323,13 @@ public class PictureDisplayBar {
     }
 
     /**
-     * @param start 矩形左上角点
-     * @param end   矩形右上角点
-     */
+     *
+     * @description 展示矩形
+     * @author Paul
+     * @date 23:29 2023/4/20
+     * @param start 矩形起始点
+     * @param end  矩形拉拽点
+     **/
     private void showRectangle(Point start, Point end) {
         rectangle.setX(start.getX());
         rectangle.setY(start.getY());
@@ -300,6 +342,13 @@ public class PictureDisplayBar {
         clickBlank = false;
     }
 
+    /**
+     *
+     * @description 得到选中的图片文件集合
+     * @author Paul
+     * @date 23:30 2023/4/20
+     * @return com.loungexi.pojo.SelectedItem
+     **/
     public static SelectedItem getSelectedItem() {
         return selectedItem;
     }
