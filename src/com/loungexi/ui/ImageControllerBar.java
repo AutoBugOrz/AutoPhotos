@@ -22,7 +22,6 @@ public class ImageControllerBar {
     private final Button autoPlayButton = new Button();
     private final Button clockWiseButton = new Button();
     private final Button counterClockWiseButton = new Button();
-    // TODO: 2023/4/25  加到面板里，同时设置样式，一个都还没搞，还得加逻辑
     private final Button editImageButton = new Button();
 
     public ImageControllerBar(Picture picture) {
@@ -30,7 +29,7 @@ public class ImageControllerBar {
         realTimeSetButtonStyle();
         setFlowPane();
         //初始化页面之后给页面上的按钮添加相应的功能
-        new ImageShowController(counterClockWiseButton, clockWiseButton, enlargeButton, shrinkButton, previousButton, nextButton, autoPlayButton,editImageButton, picture);
+        new ImageShowController(counterClockWiseButton, clockWiseButton, enlargeButton, shrinkButton, previousButton, nextButton, autoPlayButton, editImageButton, picture);
         ImageShowFrame.BORDER_PANE.setBottom(flowPane);
     }
 
@@ -40,10 +39,10 @@ public class ImageControllerBar {
      **/
     private void setFlowPane() {
         flowPane.setPrefSize(HomePage.WIDTH * 0.85, HomePage.HEIGHT * 0.9 * 0.13);
-        flowPane.setHgap(HomePage.WIDTH * 0.0381);
+        flowPane.setHgap(HomePage.WIDTH * 0.02);
         flowPane.setAlignment(Pos.CENTER);
         flowPane.setStyle("-fx-background-color: #ffffff");
-        flowPane.getChildren().addAll(editImageButton,counterClockWiseButton, clockWiseButton, previousButton, nextButton, enlargeButton, shrinkButton, autoPlayButton);
+        flowPane.getChildren().addAll(editImageButton, counterClockWiseButton, clockWiseButton, previousButton, nextButton, enlargeButton, shrinkButton, autoPlayButton);
     }
 
     /**

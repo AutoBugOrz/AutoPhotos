@@ -15,6 +15,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
 
 public class Test4Me extends Application {
 
@@ -26,7 +27,8 @@ public class Test4Me extends Application {
     public void start(Stage primaryStage) throws Exception {
         //加载fxml
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("EditPage.fxml"));
+//        loader.setLocation(getClass().getResource("file:/controller/EditPage.fxml"));
+        loader.setLocation(new URL("file:src/com/loungexi/ui/EditPage.fxml"));
         Parent root = loader.load();
         //窗口大小根据屏幕自适应
         Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();

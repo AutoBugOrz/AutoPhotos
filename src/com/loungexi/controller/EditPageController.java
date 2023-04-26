@@ -1,11 +1,13 @@
 package com.loungexi.controller;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleBinding;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -16,20 +18,17 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 
 import javax.imageio.ImageIO;
 import java.io.File;
-import java.net.URL;
-import java.util.ResourceBundle;
 
 /**
  * @author Lantech
  * @description: 编辑界面的控制器
  */
-public class EditPageController implements Initializable {
+public class EditPageController {
     @FXML
     private AnchorPane anchorPane;
 
@@ -59,14 +58,12 @@ public class EditPageController implements Initializable {
 
     @FXML
     private StackPane stackPane;
-
+    //  editArea的画笔对象
     private GraphicsContext gc;
     //开始涂鸦时鼠标的起始位置
     private Double startX, startY;
     //实时鼠标位置
     private Double nowX, nowY;
-    //
-    private double textX, textY;
     //画笔线宽
     private Double lineWidth = 5.0;
     //当前是否在涂鸦
@@ -170,10 +167,32 @@ public class EditPageController implements Initializable {
             textField.setPrefWidth(100);
             //设置文本框高度
             textField.setPrefHeight(50);
+
+            // 监听文本框父节点的宽高属性
+            textPane.widthProperty().addListener((observable, oldValue, newValue) -> {
+                double ratioX = textField.getLayoutX() / textPane.getWidth();
+                double ratioW = textField.getPrefWidth() / textPane.getWidth();
+                // 计算 TextField 新的宽度和位置
+                double newX = ratioX * newValue.doubleValue();
+                double newW = ratioW * newValue.doubleValue();
+
+                // 更新 TextField 的布局属性
+                textField.setLayoutX(newX);
+                textField.setPrefWidth(newW);
+            });
+            textPane.heightProperty().addListener((observable, oldValue, newValue) -> {
+                double ratioY = textField.getLayoutY() / textPane.getHeight();
+                double ratioH = textField.getPrefHeight() / textPane.getHeight();
+                // 计算 TextField 新的高度和位置
+                double newY = ratioY * newValue.doubleValue();
+                double newH = ratioH * newValue.doubleValue();
+
+                // 更新 TextField 的布局属性
+                textField.setLayoutY(newY);
+                textField.setPrefHeight(newH);
+            });
             textField.setLayoutX(nowX);
             textField.setLayoutY(nowY);
-//            AnchorPane.setTopAnchor(textField, nowY - textField.getPrefHeight() / 2);
-//            AnchorPane.setLeftAnchor(textField, nowX - textField.getWidth() / 2);
             textField.setStyle("-fx-background-color: transparent;-fx-border-color: red;-fx-font-size: 15;-fx-text-fill: #0eeacb;-fx-font-weight: bold");
             // 设置焦点使用户可以立即编辑文本
             textField.requestFocus();
@@ -212,7 +231,6 @@ public class EditPageController implements Initializable {
                     //退出编辑
                     exitTexting(textField);
                 } else if (keyEvent.getCode() == KeyCode.ENTER && keyEvent.isShiftDown()) {
-                    System.out.println("换行");
                     //换行
                     textField.appendText("\n");
                 }
@@ -240,17 +258,31 @@ public class EditPageController implements Initializable {
             });
             exitAddText();
             startTexting(textField);
-            System.out.println("777");
         } else if (isTexting) {
-            System.out.println("666");
             exitTexting(nowTextField);
         }
     }
 
+    private void resizeTextField(AnchorPane textPane, TextField textField) {
+
+    }
+
+    /**
+     * @description: 删除文本框
+     * @param: textField
+     * @return: void
+     * @author Lantech
+     */
     private void deleteTextField(TextField textField) {
         textPane.getChildren().remove(textField);
     }
 
+    /**
+     * @description: 退出添加文本框
+     * @param: null
+     * @return: void
+     * @author Lantech
+     */
     private void exitAddText() {
         isAddingTextField = false;
     }
@@ -301,84 +333,83 @@ public class EditPageController implements Initializable {
      */
     @FXML
     void save(ActionEvent event) {
-        // TODO: 2023/4/24 保存时，还要绘制文本框的内容到canvas上
-        System.out.println("--------------------");
-        System.out.println("editArea");
-        System.out.println(editArea.getHeight());
-        System.out.println(editArea.getWidth());
-        System.out.println("--------------------");
-        System.out.println("imageArea");
-        System.out.println(imageArea.getFitHeight());
-        System.out.println(imageArea.getFitWidth());
-        System.out.println("--------------------");
-        System.out.println("anchorPane");
-        System.out.println(anchorPane.getHeight());
-        System.out.println(anchorPane.getWidth());
-        System.out.println("--------------------");
-        System.out.println("borderPane");
-        System.out.println(borderPane.getHeight());
-        System.out.println(borderPane.getWidth());
-        System.out.println("--------------------");
-        System.out.println("toolBar");
-        System.out.println(toolBar.getHeight());
-        System.out.println(toolBar.getWidth());
-        System.out.println("--------------------");
-        System.out.println("stackPane");
-        System.out.println(stackPane.getHeight());
-        System.out.println(stackPane.getWidth());
-        System.out.println("--------------------");
-        System.out.println("textPane");
-        System.out.println(textPane.getHeight());
-        System.out.println(textPane.getWidth());
-        System.out.println("--------------------");
-        System.out.println("saveBtn");
-        // TODO: 2023/4/24
-
         //获取原始图像
         Image originalImage = imageArea.getImage();
         //获取长宽
         double originalWidth = originalImage.getWidth();
         double originalHeight = originalImage.getHeight();
-//        double originalWidth = imageArea.getFitWidth();
-//        double originalHeight = imageArea.getFitHeight();
+        // TODO: 2023/4/26 textFields保存下来的位置和大小都不对
+        Canvas canvas = new Canvas(originalWidth, originalHeight);
+        GraphicsContext canvasGc = canvas.getGraphicsContext2D();
+        SnapshotParameters parameters = new SnapshotParameters();
+        //将原图绘制到canvas上
+        canvasGc.drawImage(originalImage, 0, 0);
+        //将editArea的涂鸦绘制到canvas上
+        saveEditArea(canvasGc, parameters);
+        //将textFields的内容绘制到canvas上
+        saveTextFields(canvasGc, parameters);
+        //将canvas的内容保存为图片
+        Image newImage = canvas.snapshot(null, null);
+        choosePathToSave(newImage);
+    }
+
+    /**
+     * @description: 将textFields的内容绘制到canvas
+     * @param: canvasGc
+     * @param: parameters
+     * @return: void
+     * @author Lantech
+     */
+    private void saveTextFields(GraphicsContext canvasGc, SnapshotParameters parameters) {
+        // TODO: 2023/4/26 保存的坐标位置有问题
+        for (Node node : textPane.getChildren()) {
+            TextField textField = (TextField) node;
+            double x = textField.getLayoutX();
+            double y = textField.getLayoutY();
+            double width = textField.getWidth();
+            double height = textField.getHeight();
+            //获取文本
+            String text = textField.getText();
+            //获取字体
+//            Font font=textField.getFont();
+            String style = textField.getStyle();
+            //创建文本对象
+            Text textNode = new Text(text);
+//            textNode.setFont(font);
+            textNode.setStyle(style);
+            Image textImage = textNode.snapshot(parameters, null);
+            canvasGc.drawImage(textImage, x, y, width, height);
+        }
+    }
+
+    /**
+     * @description: 将editArea的内容绘制到canvas上
+     * @param: canvasGc
+     * @param: parameters
+     * @return: void
+     * @author Lantech
+     */
+    private void saveEditArea(GraphicsContext canvasGc, SnapshotParameters parameters) {
+        //设置画笔在绘制时的params是透明背景
+        parameters.setFill(Color.TRANSPARENT);
+        double originalWidth = imageArea.getImage().getWidth();
+        double originalHeight = imageArea.getImage().getHeight();
         double editWidth = editArea.getWidth();
         double editHeight = editArea.getHeight();
-        System.out.println("imageAreaWidth:" + imageArea.getFitWidth());
-        System.out.println("imageAreaHeight" + imageArea.getFitHeight());
-        System.out.println("imgWidth:" + originalWidth);
-        System.out.println("imgHeight" + originalHeight);
-        System.out.println("editWidth:" + editWidth);
-        System.out.println("editHeight" + editHeight);
-
-        SnapshotParameters para = new SnapshotParameters();
-        para.setFill(Color.TRANSPARENT);
-
-        PixelReader reader = originalImage.getPixelReader();
-        //创建可写入的图像
-        WritableImage writableImage = new WritableImage((int) originalWidth, (int) originalHeight);
-        PixelWriter writer = writableImage.getPixelWriter();
-        //将原始图像绘制到可写入的图像中
-        writer.setPixels(0, 0, (int) originalWidth, (int) originalHeight, reader, 0, 0);
-        //将canvas上的涂鸦绘制到可写入的图像中
-        GraphicsContext gc = editArea.getGraphicsContext2D();
-//        gc.setFill(Color.RED);
-        gc.setFill(Color.TRANSPARENT);
-
-
-//        Canvas tempCanvas = new Canvas(editWidth, editHeight);
-//        tempCanvas.getGraphicsContext2D().setFill(Color.WHITE);
-//        tempCanvas.getGraphicsContext2D().fillRect(0, 0, editWidth, editHeight);
-//        tempCanvas.getGraphicsContext2D().drawImage(editArea.snapshot(null, null), 0, 0);
-
-        writer = writableImage.getPixelWriter();
-        // TODO: 2023/4/24 ?
-        gc.stroke();
-        gc.strokeRect(0, 0, editWidth, editHeight);
-
-        reader = editArea.snapshot(para, null).getPixelReader();
-
-        writer.setPixels(0, 0, (int) editWidth, (int) editHeight, reader, 0, 0);
-        choosePathToSave(writableImage);
+        // 创建一个临时Canvas用来将涂鸦进行缩放
+        Canvas tempCanvas = new Canvas(editWidth, editHeight);
+        GraphicsContext tempGc = tempCanvas.getGraphicsContext2D();
+        //得到缩放比例
+        double scale = originalWidth / editWidth;
+        //将editArea上的涂鸦绘制到临时Canvas上
+        tempGc.drawImage(editArea.snapshot(parameters, null), 0, 0);
+        // 将临时Canvas上的涂鸦进行缩放
+        tempCanvas.setScaleX(scale);
+        tempCanvas.setScaleY(scale);
+        //得到临时canvas上的涂鸦快照
+        Image drawImage = tempCanvas.snapshot(parameters, null);
+        // 将涂鸦快照绘制到canvas上
+        canvasGc.drawImage(drawImage, 0, 0, originalWidth, originalHeight);
     }
 
     /**
@@ -390,15 +421,23 @@ public class EditPageController implements Initializable {
     private void choosePathToSave(Image image) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("保存图片");
-        // TODO: 2023/4/24 需要把默认文件名改为图片名加上"（1）"
-        fileChooser.setInitialFileName("image.png");
+        //添加保存格式
+        FileChooser.ExtensionFilter jpgFilter = new FileChooser.ExtensionFilter("JPG Files (*.jpg)", "*.jpg");
+        FileChooser.ExtensionFilter jpegFilter = new FileChooser.ExtensionFilter("JPEG Files (*.jpeg)", "*.jpeg");
+        FileChooser.ExtensionFilter pngFilter = new FileChooser.ExtensionFilter("PNG Files (*.png)", "*.png");
+        FileChooser.ExtensionFilter bmpFilter = new FileChooser.ExtensionFilter("BMP Files (*.bmp)", "*.bmp");
+        fileChooser.getExtensionFilters().addAll(jpgFilter, jpegFilter, pngFilter, bmpFilter);
+        fileChooser.setInitialFileName("image.jpg");
         File file = fileChooser.showSaveDialog(stackPane.getScene().getWindow());
         if (file != null) {
             try {
-                ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
-                //将新图片展示成新的图片
-//                Image newImage = new Image(file.toURI().toString());
-//                imageArea.setImage(newImage);
+                ImageIO.write(SwingFXUtils.fromFXImage(image, null), "jpg", file);
+                //将保存成功的消息反馈给用户
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("保存成功");
+                alert.setHeaderText(null);
+                alert.setContentText("文件已保存到：" + file.getAbsolutePath());
+                alert.showAndWait();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -406,7 +445,7 @@ public class EditPageController implements Initializable {
     }
 
     /**
-     * @description: 切换到编辑文字模式
+     * @description: 切换到添加文本框模式
      * @param: event
      * @return: void
      * @author Lantech
@@ -418,21 +457,37 @@ public class EditPageController implements Initializable {
         System.out.println("textBtn");
     }
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        System.out.println("init...");
+    /**
+     * @description: 初始化controller
+     * @param: url
+     * @param: resourceBundle
+     * @return: void
+     * @author Lantech
+     */
+    public void initialize() {
+        // TODO: 2023/4/26 问chat这段代码有无冗余
         editArea.setStyle("-fx-background-color: transparent");
         gc = editArea.getGraphicsContext2D();
         gc.setLineWidth(lineWidth);
         gc.setStroke(Color.RED);
         // 将背景颜色设置为透明色
         gc.setFill(Color.TRANSPARENT);
-        // 填充背景
-        //这样，当在Canvas上进行涂鸦时，就会显示透明的背景，从而看起来像是在图像上直接涂鸦。
+        // 在editArea上画出透明背景
         gc.fillRect(0, 0, editArea.getWidth(), editArea.getHeight());
+    }
+
+    /**
+     * @description: 供外部调用来设置要编辑的图片
+     * @param: image
+     * @return: void
+     * @author Lantech
+     */
+    public void setImage(Image image) {
+        // TODO: 2023/4/26 最大化窗口后再恢复的话图片展示就会有问题
+        // TODO: 2023/4/26 最大化之后对话框位置也有问题
+        imageArea.setImage(image);
         imageHeight = imageArea.getImage().getHeight();
         imageWidth = imageArea.getImage().getWidth();
-        //设置编辑区域监听事件
         /*
          * @description: 图片随窗口大小变化的监听器
          * @author Lantech
