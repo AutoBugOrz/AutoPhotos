@@ -43,7 +43,7 @@ public class ImageControllerBar {
         flowPane.setHgap(HomePage.WIDTH * 0.0381);
         flowPane.setAlignment(Pos.CENTER);
         flowPane.setStyle("-fx-background-color: #ffffff");
-        flowPane.getChildren().addAll(counterClockWiseButton, clockWiseButton, previousButton, nextButton, enlargeButton, shrinkButton, autoPlayButton,editImageButton);
+        flowPane.getChildren().addAll(editImageButton,counterClockWiseButton, clockWiseButton, previousButton, nextButton, enlargeButton, shrinkButton, autoPlayButton);
     }
 
     /**
@@ -72,6 +72,9 @@ public class ImageControllerBar {
 
         counterClockWiseButton.setGraphic(new ImageView(new Image("File:image/counter clock wise.png")));
         counterClockWiseButton.setStyle("-fx-background-color: #ffffff;" + "-fx-border-color: lightgray;" + "-fx-border-radius: 10");
+
+        editImageButton.setGraphic(new ImageView(new Image("File:image/edit.png")));
+        editImageButton.setStyle("-fx-background-color: #ffffff;" + "-fx-border-color: lightgray;" + "-fx-border-radius: 10");
     }
 
     /**
@@ -100,6 +103,9 @@ public class ImageControllerBar {
         counterClockWiseButton.setOnMouseEntered(event -> counterClockWiseButton.setCursor(Cursor.HAND));
         counterClockWiseButton.setOnMousePressed(event -> counterClockWiseButton.setStyle("-fx-background-color: #d5d5d5;" + "-fx-border-color: #838383;" + "-fx-border-radius: 10;" + "-fx-background-radius: 10"));
         counterClockWiseButton.setOnMouseReleased(event -> counterClockWiseButton.setStyle("-fx-background-color: #ffffff;" + "-fx-border-color: lightgray;" + "-fx-border-radius: 10"));
+        editImageButton.setOnMouseEntered(event -> editImageButton.setCursor(Cursor.HAND));
+        editImageButton.setOnMousePressed(event -> editImageButton.setStyle("-fx-background-color: #d5d5d5;" + "-fx-border-color: #838383;" + "-fx-border-radius: 10;" + "-fx-background-radius: 10"));
+        editImageButton.setOnMouseReleased(event -> editImageButton.setStyle("-fx-background-color: #ffffff;" + "-fx-border-color: lightgray;" + "-fx-border-radius: 10"));
     }
 
 }

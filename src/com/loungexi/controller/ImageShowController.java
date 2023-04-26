@@ -43,6 +43,9 @@ public class ImageShowController {
      **/
     private void addButtonController(Button counterClockWiseButton, Button clockWiseButton, Button enlargeButton, Button shrinkButton, Button previousButton, Button nextButton, Button autoPlayButton, Button editImageButton) {
         editImageButton.setOnAction(event -> {
+            this.isAutoPlay = false;
+            autoPlayButton.setGraphic(new ImageView(new Image("File:image/anto play.png")));
+
             // TODO: 2023/4/26  还要加个禁止对其他窗口进行操作的代码，还要动态获取image
             Stage primaryStage = new Stage();
             //加载fxml
@@ -211,7 +214,6 @@ public class ImageShowController {
             //索引自减 展示新图片
             this.nowImageCount--;
             File file = list.get(nowImageCount);
-            System.out.println(file.getAbsolutePath());
             //记住JavaFX中图片路径的前面有 "File:"
             Picture picture = new Picture(new Image("File:" + file.getAbsolutePath()), file.getName());
             // 直接new一个对象放进窗口

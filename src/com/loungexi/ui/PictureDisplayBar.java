@@ -338,7 +338,6 @@ public class PictureDisplayBar {
         rectangle.setStyle("-fx-border-color: #00F5FF;");
         rectangle.setFill(Paint.valueOf("00F5FF33"));
         rectangle.setVisible(true);
-
         clickBlank = false;
     }
 
