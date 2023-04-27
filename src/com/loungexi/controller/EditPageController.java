@@ -1,12 +1,11 @@
 package com.loungexi.controller;
 
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.DoubleBinding;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
@@ -52,9 +51,8 @@ public class EditPageController {
 
     @FXML
     private Button textBtn;
-
     @FXML
-    private ToolBar toolBar;
+    private HBox toolBar;
 
     @FXML
     private StackPane stackPane;
@@ -167,32 +165,29 @@ public class EditPageController {
             textField.setPrefWidth(100);
             //设置文本框高度
             textField.setPrefHeight(50);
-
-            // 监听文本框父节点的宽高属性
-            textPane.widthProperty().addListener((observable, oldValue, newValue) -> {
-                double ratioX = textField.getLayoutX() / textPane.getWidth();
-                double ratioW = textField.getPrefWidth() / textPane.getWidth();
-                // 计算 TextField 新的宽度和位置
-                double newX = ratioX * newValue.doubleValue();
-                double newW = ratioW * newValue.doubleValue();
-
-                // 更新 TextField 的布局属性
-                textField.setLayoutX(newX);
-                textField.setPrefWidth(newW);
-            });
-            textPane.heightProperty().addListener((observable, oldValue, newValue) -> {
-                double ratioY = textField.getLayoutY() / textPane.getHeight();
-                double ratioH = textField.getPrefHeight() / textPane.getHeight();
-                // 计算 TextField 新的高度和位置
-                double newY = ratioY * newValue.doubleValue();
-                double newH = ratioH * newValue.doubleValue();
-
-                // 更新 TextField 的布局属性
-                textField.setLayoutY(newY);
-                textField.setPrefHeight(newH);
-            });
             textField.setLayoutX(nowX);
             textField.setLayoutY(nowY);
+            // TODO: 2023/4/27 得根据imageArea的坐标来，不能根据stackPane的宽高来
+            // 获取imageArea的初始位置
+//            Point2D initPos = imageArea.localToScene(imageArea.getBoundsInLocal().getCenterX(), imageArea.getBoundsInLocal().getCenterY());
+//            textField.setLayoutX(initPos.getX() - textField.getWidth() / 2);
+//            textField.setLayoutY(initPos.getY() - textField.getHeight() / 2);
+
+            // 监听imageArea中心点坐标的变化
+            imageArea.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
+                // 获取imageArea的中心点全局坐标
+                Point2D newPos = imageArea.localToScene(newValue.getCenterX(), newValue.getCenterY());
+
+                // 计算textField应该在textPane中的位置
+                double newX = newPos.getX() - textField.getWidth() / 2;
+                double newY = newPos.getY() - textField.getHeight() / 2;
+
+                // 更新textField的位置
+                textField.setLayoutX(newX);
+                textField.setLayoutY(newY);
+            });
+
+
             textField.setStyle("-fx-background-color: transparent;-fx-border-color: red;-fx-font-size: 15;-fx-text-fill: #0eeacb;-fx-font-weight: bold");
             // 设置焦点使用户可以立即编辑文本
             textField.requestFocus();
@@ -263,10 +258,6 @@ public class EditPageController {
         }
     }
 
-    private void resizeTextField(AnchorPane textPane, TextField textField) {
-
-    }
-
     /**
      * @description: 删除文本框
      * @param: textField
@@ -294,7 +285,6 @@ public class EditPageController {
      * @author Lantech
      */
     private void exitTexting(TextField textField) {
-        System.out.println("exit...");
         textPane.requestFocus();
         textField.setEditable(false);
         isTexting = false;
@@ -321,8 +311,6 @@ public class EditPageController {
     void draw(ActionEvent event) {
         isDrawing = true;
         isAddingTextField = false;
-        System.out.println("drawBtn");
-
     }
 
     /**
@@ -373,6 +361,7 @@ public class EditPageController {
             //获取字体
 //            Font font=textField.getFont();
             String style = textField.getStyle();
+            System.out.println(style);
             //创建文本对象
             Text textNode = new Text(text);
 //            textNode.setFont(font);
@@ -431,7 +420,8 @@ public class EditPageController {
         File file = fileChooser.showSaveDialog(stackPane.getScene().getWindow());
         if (file != null) {
             try {
-                ImageIO.write(SwingFXUtils.fromFXImage(image, null), "jpg", file);
+                //用jpg会保存不了
+                ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
                 //将保存成功的消息反馈给用户
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("保存成功");
@@ -465,7 +455,6 @@ public class EditPageController {
      * @author Lantech
      */
     public void initialize() {
-        // TODO: 2023/4/26 问chat这段代码有无冗余
         editArea.setStyle("-fx-background-color: transparent");
         gc = editArea.getGraphicsContext2D();
         gc.setLineWidth(lineWidth);
@@ -474,6 +463,22 @@ public class EditPageController {
         gc.setFill(Color.TRANSPARENT);
         // 在editArea上画出透明背景
         gc.fillRect(0, 0, editArea.getWidth(), editArea.getHeight());
+        // 计算Button的宽度
+        double buttonWidth = (borderPane.getWidth()) / 3;
+        // 设置Button的宽度
+        drawBtn.setPrefWidth(buttonWidth);
+        textBtn.setPrefWidth(buttonWidth);
+        saveBtn.setPrefWidth(buttonWidth);
+        // 设置Button的水平增长策略为ALWAYS
+        HBox.setHgrow(drawBtn, Priority.ALWAYS);
+        HBox.setHgrow(textBtn, Priority.ALWAYS);
+        HBox.setHgrow(saveBtn, Priority.ALWAYS);
+        borderPane.widthProperty().addListener((obs, oldVal, newVal) -> {
+            double width = (newVal.doubleValue()) / 3;
+            drawBtn.setPrefWidth(width);
+            textBtn.setPrefWidth(width);
+            saveBtn.setPrefWidth(width);
+        });
     }
 
     /**

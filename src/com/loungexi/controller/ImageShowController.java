@@ -127,7 +127,7 @@ public class ImageShowController {
             primaryStage.setX((screenWidth - scene.getWidth()) / 2);
             primaryStage.setY((screenHeight - scene.getHeight()) / 2);
             primaryStage.setScene(scene);
-            primaryStage.setTitle("nice");
+            primaryStage.setTitle("编辑图片");
             primaryStage.show();
         } else {
             Alert alert = new Alert(Alert.AlertType.WARNING);

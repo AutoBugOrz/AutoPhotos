@@ -74,7 +74,7 @@ public class MainPageTopBar extends HBox {
      * @description: 构造按钮界面以及监听器
      * @param: null
      * @return: void
-     * @author p
+     * @author Lantech
      */
     private void init() {
         //buttons的基础设置
