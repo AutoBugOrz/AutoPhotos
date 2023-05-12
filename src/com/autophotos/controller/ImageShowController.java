@@ -106,7 +106,7 @@ public class ImageShowController {
             FXMLLoader loader = new FXMLLoader();
             Parent root = null;
             //fxml路径
-            String fxmlUrlString = "file:src/com/loungexi/ui/EditPage.fxml";
+            String fxmlUrlString = "file:src/com/autophotos/ui/EditPage.fxml";
             try {
                 //加载fxml
                 loader.setLocation(new URL(fxmlUrlString));
