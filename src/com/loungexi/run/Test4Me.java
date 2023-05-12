@@ -28,13 +28,13 @@ public class Test4Me extends Application {
         //加载fxml
         FXMLLoader loader = new FXMLLoader();
 //        loader.setLocation(getClass().getResource("file:/controller/EditPage.fxml"));
-        loader.setLocation(new URL("file:src/com/loungexi/ui/EditPage.fxml"));
+        loader.setLocation(new URL("file:src/com/loungexi/run/test.fxml"));
         Parent root = loader.load();
         //窗口大小根据屏幕自适应
         Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
         double screenWidth = visualBounds.getWidth();
         double screenHeight = visualBounds.getHeight();
-        Scene scene = new Scene(root, screenWidth * 0.8, screenHeight * 0.8);
+        Scene scene = new Scene(root, screenWidth * 0.6, screenHeight * 0.6);
         // TODO: 2023/4/24
 //        ImageView imageArea = (ImageView) root.lookup("#imageArea");
 //        imageArea.setImage(new Image("file:1.jpg"));

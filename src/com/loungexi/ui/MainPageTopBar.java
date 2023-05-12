@@ -133,7 +133,7 @@ public class MainPageTopBar extends HBox {
         //按修改时间降序
         displayItems.sort((o1, o2) -> Pictures.lastModifiedOf(o2.getPicture()).compareTo(Pictures.lastModifiedOf(o1.getPicture())));
         //更改btn
-        SORT_BY_LAST_MODIFIED.setText("修改日期    ↓");
+        SORT_BY_LAST_MODIFIED.setText("修改日期");
         //排完序后放回展示区
         setDisplayItems(displayItems);
     }

@@ -2,14 +2,13 @@
 
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 
-<AnchorPane fx:id="anchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19"
+<AnchorPane fx:id="anchorPane" prefHeight="478.0" prefWidth="585.0" xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.loungexi.controller.EditPageController">
     <children>
         <BorderPane fx:id="borderPane" layoutX="1.0" layoutY="14.0" prefHeight="400.0" prefWidth="600.0"
@@ -20,9 +19,6 @@
                     <children>
                         <ImageView fx:id="imageArea" fitHeight="345.0" fitWidth="532.0" mouseTransparent="true"
                                    preserveRatio="true" StackPane.alignment="CENTER">
-                            <image>
-                                <Image url="@../run/1.jpg"/>
-                            </image>
                         </ImageView>
                         <Canvas fx:id="editArea" height="271.0" onMouseClicked="#addTextField"
                                 onMouseDragged="#drawAndErase" onMousePressed="#getMouseLocation"
@@ -36,12 +32,9 @@
             <top>
                 <HBox BorderPane.alignment="CENTER">
                     <children>
-                        <Button fx:id="drawBtn" contentDisplay="CENTER" mnemonicParsing="false" onAction="#draw"
-                                text="涂鸦"/>
-                        <Button fx:id="textBtn" alignment="CENTER" mnemonicParsing="false" onAction="#text"
-                                text="编辑文字"/>
-                        <Button fx:id="saveBtn" alignment="CENTER" mnemonicParsing="false" onAction="#save"
-                                text="保存"/>
+                        <Button fx:id="drawBtn" contentDisplay="CENTER" mnemonicParsing="false" onAction="#draw"/>
+                        <Button fx:id="textBtn" alignment="CENTER" mnemonicParsing="false" onAction="#text"/>
+                        <Button fx:id="saveBtn" alignment="CENTER" mnemonicParsing="false" onAction="#save"/>
                     </children>
                 </HBox>
             </top>

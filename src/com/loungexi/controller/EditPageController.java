@@ -5,19 +5,15 @@ import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.geometry.Point2D;
-import javafx.scene.Node;
-import javafx.scene.SnapshotParameters;
+import javafx.geometry.Pos;
+import javafx.scene.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 
 import javax.imageio.ImageIO;
@@ -70,7 +66,6 @@ public class EditPageController {
     private boolean isTexting = false;
     //当前是否在添加文本框
     private boolean isAddingTextField = false;
-    private TextField nowTextField;
     //图片的原始长宽
     private double imageWidth, imageHeight;
 
@@ -83,12 +78,14 @@ public class EditPageController {
     @FXML
     void drawAndErase(MouseEvent event) {
         if (isDrawing && event.isPrimaryButtonDown()) {
+            editArea.setCursor(new ImageCursor(new Image("file:image/pen.png")));
             //拖动鼠标左键时涂鸦
             gc.strokeLine(startX, startY, event.getX(), event.getY());
             //重置画笔开始坐标
             startX = event.getX();
             startY = event.getY();
         } else if (isDrawing && event.isSecondaryButtonDown()) {
+            editArea.setCursor(new ImageCursor(new Image("file:image/eraser.png")));
             //拖动鼠标右键时擦除
             nowX = event.getX();
             nowY = event.getY();
@@ -104,8 +101,14 @@ public class EditPageController {
             //重置画笔开始坐标
             startX = nowX;
             startY = nowY;
+            editArea.setOnMouseReleased(e -> {
+                if (isDrawing && e.getButton() == MouseButton.SECONDARY) {
+                    editArea.setCursor(new ImageCursor(new Image("file:image/pen.png")));
+                }
+            });
         }
     }
+
 
     /**
      * @description: 获取鼠标位置
@@ -154,47 +157,24 @@ public class EditPageController {
     @FXML
     void addTextField(MouseEvent event) {
         if (isAddingTextField) {
-            nowX = event.getX();
-            nowY = event.getY();
             //显示文本框
             TextField textField = new TextField();
-            nowTextField = textField;
             //将文本框添加到画布上
             textPane.getChildren().add(textField);
             //设置文本框宽度
-            textField.setPrefWidth(100);
+            textField.setPrefWidth(200);
             //设置文本框高度
             textField.setPrefHeight(50);
+            nowX = event.getSceneX();
+            nowY = event.getSceneY() - textField.getPrefHeight();
+            System.out.println(nowX + " " + nowY);
             textField.setLayoutX(nowX);
             textField.setLayoutY(nowY);
-            // TODO: 2023/4/27 得根据imageArea的坐标来，不能根据stackPane的宽高来
-            // 获取imageArea的初始位置
-//            Point2D initPos = imageArea.localToScene(imageArea.getBoundsInLocal().getCenterX(), imageArea.getBoundsInLocal().getCenterY());
-//            textField.setLayoutX(initPos.getX() - textField.getWidth() / 2);
-//            textField.setLayoutY(initPos.getY() - textField.getHeight() / 2);
-
-            // 监听imageArea中心点坐标的变化
-            imageArea.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
-                // 获取imageArea的中心点全局坐标
-                Point2D newPos = imageArea.localToScene(newValue.getCenterX(), newValue.getCenterY());
-
-                // 计算textField应该在textPane中的位置
-                double newX = newPos.getX() - textField.getWidth() / 2;
-                double newY = newPos.getY() - textField.getHeight() / 2;
-
-                // 更新textField的位置
-                textField.setLayoutX(newX);
-                textField.setLayoutY(newY);
-            });
-
-
             textField.setStyle("-fx-background-color: transparent;-fx-border-color: red;-fx-font-size: 15;-fx-text-fill: #0eeacb;-fx-font-weight: bold");
             // 设置焦点使用户可以立即编辑文本
             textField.requestFocus();
             /*
              * @description: 给textField的可编辑属性添加监听事件
-             * @param: event
-             * @return: void
              * @author Lantech
              */
             textField.editableProperty().addListener(new ChangeListener<Boolean>() {
@@ -217,24 +197,17 @@ public class EditPageController {
             });
             /*
              * @description: textField的键盘监听事件
-             * @param: event
-             * @return: void
              * @author Lantech
              */
             textField.setOnKeyPressed(keyEvent -> {
                 if ((keyEvent.getCode() == KeyCode.ENTER && !keyEvent.isShiftDown()) || keyEvent.getCode() == KeyCode.ESCAPE) {
                     //退出编辑
-                    exitTexting(textField);
-                } else if (keyEvent.getCode() == KeyCode.ENTER && keyEvent.isShiftDown()) {
-                    //换行
-                    textField.appendText("\n");
+                    exitTexting();
                 }
             });
 
             /*
              * @description: textField的鼠标点击事件
-             * @param: event
-             * @return: void
              * @author Lantech
              */
             textField.setOnMouseClicked(event1 -> {
@@ -254,7 +227,7 @@ public class EditPageController {
             exitAddText();
             startTexting(textField);
         } else if (isTexting) {
-            exitTexting(nowTextField);
+            exitTexting();
         }
     }
 
@@ -284,9 +257,13 @@ public class EditPageController {
      * @return: void
      * @author Lantech
      */
-    private void exitTexting(TextField textField) {
+    private void exitTexting() {
+        editArea.setCursor(Cursor.DEFAULT);
         textPane.requestFocus();
-        textField.setEditable(false);
+        for (Node node : textPane.getChildren()) {
+            TextField textField = (TextField) node;
+            textField.setEditable(false);
+        }
         isTexting = false;
     }
 
@@ -311,6 +288,29 @@ public class EditPageController {
     void draw(ActionEvent event) {
         isDrawing = true;
         isAddingTextField = false;
+        System.out.println("-----------------------");
+        System.out.println("stackPane:");
+        System.out.println(stackPane.getWidth());
+        System.out.println(stackPane.getHeight());
+        System.out.println("imageArea:");
+        System.out.println(imageArea.getFitWidth());
+        System.out.println(imageArea.getFitHeight());
+        System.out.println("imageAreaXY:");
+        System.out.println(imageArea.getLayoutX());
+        System.out.println(imageArea.getLayoutY());
+        System.out.println(imageArea.getX());
+        System.out.println(imageArea.getY());
+        System.out.println("editArea:");
+        System.out.println(editArea.getWidth());
+        System.out.println(editArea.getHeight());
+        System.out.println("textPane:");
+        System.out.println(textPane.getWidth());
+        System.out.println(textPane.getHeight());
+        System.out.println("image:");
+        System.out.println(imageWidth);
+        System.out.println(imageHeight);
+        System.out.println("-----------------------");
+        imageArea.setCursor(new ImageCursor(new Image("file:image/pen.png")));
     }
 
     /**
@@ -326,7 +326,6 @@ public class EditPageController {
         //获取长宽
         double originalWidth = originalImage.getWidth();
         double originalHeight = originalImage.getHeight();
-        // TODO: 2023/4/26 textFields保存下来的位置和大小都不对
         Canvas canvas = new Canvas(originalWidth, originalHeight);
         GraphicsContext canvasGc = canvas.getGraphicsContext2D();
         SnapshotParameters parameters = new SnapshotParameters();
@@ -349,27 +348,40 @@ public class EditPageController {
      * @author Lantech
      */
     private void saveTextFields(GraphicsContext canvasGc, SnapshotParameters parameters) {
-        // TODO: 2023/4/26 保存的坐标位置有问题
+        double originalWidth = imageArea.getImage().getWidth();
+        double originalHeight = imageArea.getImage().getHeight();
+        double imageAreaWidth = imageArea.getFitWidth();
+        double imageAreaHeight = imageArea.getFitHeight();
+        double textPaneWidth = textPane.getWidth();
+        double textPaneHeight = textPane.getHeight();
+        //得到坐标差距
+        double deltaX = (textPaneWidth - imageAreaWidth) / 2;
+        double deltaY = (textPaneHeight - imageAreaHeight) / 2;
+        // 创建一个临时Canvas用来将涂鸦进行缩放
+        Canvas tempCanvas = new Canvas(imageAreaWidth, imageAreaHeight);
+        GraphicsContext tempGc = tempCanvas.getGraphicsContext2D();
         for (Node node : textPane.getChildren()) {
             TextField textField = (TextField) node;
-            double x = textField.getLayoutX();
-            double y = textField.getLayoutY();
+            double x = textField.getLayoutX() - deltaX;
+            double y = textField.getLayoutY() - deltaY;
+            System.out.println(x + " " + y);
             double width = textField.getWidth();
             double height = textField.getHeight();
-            //获取文本
-            String text = textField.getText();
-            //获取字体
-//            Font font=textField.getFont();
-            String style = textField.getStyle();
-            System.out.println(style);
-            //创建文本对象
-            Text textNode = new Text(text);
-//            textNode.setFont(font);
-            textNode.setStyle(style);
-            Image textImage = textNode.snapshot(parameters, null);
-            canvasGc.drawImage(textImage, x, y, width, height);
+            Image textImage = textField.snapshot(parameters, null);
+            tempGc.drawImage(textImage, x, y, width, height);
         }
+        //得到缩放比例
+        double scaleX = originalWidth / imageAreaWidth;
+        double scaleY = originalHeight / imageAreaHeight;
+
+        // 将临时Canvas上的涂鸦进行缩放
+        tempCanvas.setScaleX(scaleY);
+        tempCanvas.setScaleY(scaleX);
+        Image textPaneImage = tempCanvas.snapshot(parameters, null);
+        // 将涂鸦快照绘制到canvas上
+        canvasGc.drawImage(textPaneImage, 0, 0, originalWidth, originalHeight);
     }
+
 
     /**
      * @description: 将editArea的内容绘制到canvas上
@@ -388,10 +400,10 @@ public class EditPageController {
         // 创建一个临时Canvas用来将涂鸦进行缩放
         Canvas tempCanvas = new Canvas(editWidth, editHeight);
         GraphicsContext tempGc = tempCanvas.getGraphicsContext2D();
-        //得到缩放比例
-        double scale = originalWidth / editWidth;
         //将editArea上的涂鸦绘制到临时Canvas上
         tempGc.drawImage(editArea.snapshot(parameters, null), 0, 0);
+        //得到缩放比例
+        double scale = originalWidth / editWidth;
         // 将临时Canvas上的涂鸦进行缩放
         tempCanvas.setScaleX(scale);
         tempCanvas.setScaleY(scale);
@@ -444,7 +456,7 @@ public class EditPageController {
     void text(ActionEvent event) {
         isDrawing = false;
         isAddingTextField = true;
-        System.out.println("textBtn");
+        editArea.setCursor(Cursor.TEXT);
     }
 
     /**
@@ -479,6 +491,9 @@ public class EditPageController {
             textBtn.setPrefWidth(width);
             saveBtn.setPrefWidth(width);
         });
+        drawBtn.setGraphic(new ImageView(new Image("File:image/draw.png")));
+        saveBtn.setGraphic(new ImageView(new Image("File:image/save.png")));
+        textBtn.setGraphic(new ImageView(new Image("File:image/text.png")));
     }
 
     /**
@@ -488,8 +503,6 @@ public class EditPageController {
      * @author Lantech
      */
     public void setImage(Image image) {
-        // TODO: 2023/4/26 最大化窗口后再恢复的话图片展示就会有问题
-        // TODO: 2023/4/26 最大化之后对话框位置也有问题
         imageArea.setImage(image);
         imageHeight = imageArea.getImage().getHeight();
         imageWidth = imageArea.getImage().getWidth();
@@ -497,6 +510,7 @@ public class EditPageController {
          * @description: 图片随窗口大小变化的监听器
          * @author Lantech
          */
+        StackPane.setAlignment(imageArea, Pos.CENTER);
         stackPane.widthProperty().addListener((observable, oldValue, newValue) -> {
             resizeImage();
         });
@@ -506,9 +520,6 @@ public class EditPageController {
         //绑定编辑区域和图片区域的大小
         editArea.widthProperty().bind(imageArea.fitWidthProperty());
         editArea.heightProperty().bind(imageArea.fitHeightProperty());
-        //绑定textPane区域和图片区域的大小
-        textPane.prefWidthProperty().bind(imageArea.fitWidthProperty());
-        textPane.prefHeightProperty().bind(imageArea.fitHeightProperty());
     }
 
     /**

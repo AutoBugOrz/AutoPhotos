@@ -6,14 +6,17 @@ import com.loungexi.pojo.Picture;
 import com.loungexi.ui.ImageShowBar;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
+import javafx.print.PageOrientation;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.File;
 import java.net.URL;
@@ -96,7 +99,6 @@ public class ImageShowController {
      * @author Lantech
      */
     private void loadFxml() {
-        // TODO: 2023/4/26  还要加个禁止对其他窗口进行操作的代码
         File file = list.get(nowImageCount);
         String fileName = file.getName();
         String fileType = fileName.substring(fileName.lastIndexOf(".") + 1);
@@ -123,11 +125,14 @@ public class ImageShowController {
             double screenWidth = visualBounds.getWidth();
             double screenHeight = visualBounds.getHeight();
             Scene scene = new Scene(root, screenWidth * 0.8, screenHeight * 0.8);
+            primaryStage.setResizable(false);
             //窗口居中
             primaryStage.setX((screenWidth - scene.getWidth()) / 2);
             primaryStage.setY((screenHeight - scene.getHeight()) / 2);
             primaryStage.setScene(scene);
             primaryStage.setTitle("编辑图片");
+            //禁止对其他窗口进行操作
+            primaryStage.initModality(Modality.APPLICATION_MODAL);
             primaryStage.show();
         } else {
             Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -136,7 +141,6 @@ public class ImageShowController {
             alert.setContentText("不支持对gif格式进行编辑");
             alert.showAndWait();
         }
-
     }
 
     /**
