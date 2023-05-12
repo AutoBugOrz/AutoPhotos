@@ -122,7 +122,6 @@ public class EditPageController {
             startX = event.getX();
             startY = event.getY();
         }
-        System.out.println(startX + " " + startY);
     }
 
     /**
@@ -167,7 +166,6 @@ public class EditPageController {
             textField.setPrefHeight(50);
             nowX = event.getSceneX();
             nowY = event.getSceneY() - textField.getPrefHeight();
-            System.out.println(nowX + " " + nowY);
             textField.setLayoutX(nowX);
             textField.setLayoutY(nowY);
             textField.setStyle("-fx-background-color: transparent;-fx-border-color: red;-fx-font-size: 15;-fx-text-fill: #0eeacb;-fx-font-weight: bold");
@@ -288,28 +286,6 @@ public class EditPageController {
     void draw(ActionEvent event) {
         isDrawing = true;
         isAddingTextField = false;
-        System.out.println("-----------------------");
-        System.out.println("stackPane:");
-        System.out.println(stackPane.getWidth());
-        System.out.println(stackPane.getHeight());
-        System.out.println("imageArea:");
-        System.out.println(imageArea.getFitWidth());
-        System.out.println(imageArea.getFitHeight());
-        System.out.println("imageAreaXY:");
-        System.out.println(imageArea.getLayoutX());
-        System.out.println(imageArea.getLayoutY());
-        System.out.println(imageArea.getX());
-        System.out.println(imageArea.getY());
-        System.out.println("editArea:");
-        System.out.println(editArea.getWidth());
-        System.out.println(editArea.getHeight());
-        System.out.println("textPane:");
-        System.out.println(textPane.getWidth());
-        System.out.println(textPane.getHeight());
-        System.out.println("image:");
-        System.out.println(imageWidth);
-        System.out.println(imageHeight);
-        System.out.println("-----------------------");
         imageArea.setCursor(new ImageCursor(new Image("file:image/pen.png")));
     }
 
@@ -364,7 +340,6 @@ public class EditPageController {
             TextField textField = (TextField) node;
             double x = textField.getLayoutX() - deltaX;
             double y = textField.getLayoutY() - deltaY;
-            System.out.println(x + " " + y);
             double width = textField.getWidth();
             double height = textField.getHeight();
             Image textImage = textField.snapshot(parameters, null);
