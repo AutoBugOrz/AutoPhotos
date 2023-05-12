@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+
+<AnchorPane fx:id="anchorPane" prefHeight="478.0" prefWidth="585.0" xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.autophotos.controller.EditPageController">
+    <children>
+        <BorderPane fx:id="borderPane" layoutX="1.0" layoutY="14.0" prefHeight="400.0" prefWidth="600.0"
+                    AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                    AnchorPane.topAnchor="0.0">
+            <center>
+                <StackPane fx:id="stackPane" BorderPane.alignment="CENTER">
+                    <children>
+                        <ImageView fx:id="imageArea" fitHeight="345.0" fitWidth="532.0" mouseTransparent="true"
+                                   preserveRatio="true" StackPane.alignment="CENTER">
+                        </ImageView>
+                        <Canvas fx:id="editArea" height="271.0" onMouseClicked="#addTextField"
+                                onMouseDragged="#drawAndErase" onMousePressed="#getMouseLocation"
+                                onScroll="#adjustMouseSize" pickOnBounds="true" width="435.0"
+                                StackPane.alignment="CENTER"/>
+                        <AnchorPane fx:id="textPane" pickOnBounds="false" prefHeight="200.0" prefWidth="200.0"
+                                    StackPane.alignment="CENTER"/>
+                    </children>
+                </StackPane>
+            </center>
+            <top>
+                <HBox BorderPane.alignment="CENTER">
+                    <children>
+                        <Button fx:id="drawBtn" contentDisplay="CENTER" mnemonicParsing="false" onAction="#draw"/>
+                        <Button fx:id="textBtn" alignment="CENTER" mnemonicParsing="false" onAction="#text"/>
+                        <Button fx:id="saveBtn" alignment="CENTER" mnemonicParsing="false" onAction="#save"/>
+                    </children>
+                </HBox>
+            </top>
+        </BorderPane>
+    </children>
+</AnchorPane>
